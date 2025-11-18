@@ -1,0 +1,127 @@
+.dashboard-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+}
+
+.dashboard-header {
+  margin: 0;
+  text-align: left;
+}
+
+.dashboard-page-title {
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+}
+
+.dashboard-page-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0.5rem 0 0 0;
+  text-align: left;
+}
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-charts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dashboard-chart-card {
+  padding: 1.5rem;
+}
+
+.dashboard-chart-title {
+  color: #0f172a;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+  text-align: left;
+}
+
+.dashboard-activity-card {
+  padding: 1.5rem;
+}
+
+.dashboard-activity-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-activity-list > * + * {
+  margin-top: 1rem;
+}
+
+.dashboard-activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.dashboard-activity-info {
+  flex: 1;
+}
+
+.dashboard-activity-store {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+}
+
+.dashboard-activity-action {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+}
+
+.dashboard-activity-time {
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-align: right;
+}
+

@@ -1,0 +1,16 @@
+.page-content {
+  max-width: 1200px;
+}
+
+.page-title {
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+

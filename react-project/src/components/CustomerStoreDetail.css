@@ -1,0 +1,701 @@
+.customer-store-detail {
+  min-height: 100vh;
+  background: #f8fafc;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.customer-store-detail-header {
+  position: relative;
+  height: 20rem;
+  background: linear-gradient(to bottom right, #1e40af, #1e3a8a, #1e293b);
+  overflow: hidden;
+}
+
+.customer-store-detail-header-emoji {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9rem;
+  opacity: 0.2;
+}
+
+.customer-store-detail-content {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.customer-store-detail-info-card {
+  position: relative;
+  margin-top: -5rem;
+  z-index: 10;
+}
+
+.customer-store-detail-info-card > div {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.customer-store-detail-info-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.customer-store-detail-info-left {
+  flex: 1;
+  text-align: left;
+}
+
+.customer-store-detail-name-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customer-store-detail-name {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+.customer-store-detail-badge {
+  padding: 0.25rem 0.75rem;
+  background: #10b981;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.customer-store-detail-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+}
+
+.customer-store-detail-stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.customer-store-detail-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.customer-store-detail-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.customer-store-detail-stars svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.customer-store-detail-stat svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.customer-store-detail-follow-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.customer-store-detail-follow-button:hover {
+  background: #1e3a8a;
+}
+
+.customer-store-detail-follow-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.customer-store-detail-tabs {
+  margin-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.customer-store-detail-tabs-list {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.customer-store-detail-tab {
+  flex: 1;
+  padding: 0.75rem 2rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.15s;
+}
+
+.customer-store-detail-tab-active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.customer-store-detail-tab-content {
+  text-align: left;
+}
+
+.customer-store-detail-products-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .customer-store-detail-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .customer-store-detail-products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.customer-store-detail-about-card {
+  padding: 2rem;
+}
+
+.customer-store-detail-about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.customer-store-detail-about-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+}
+
+.customer-store-detail-about-text {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: #64748b;
+  margin: 0;
+}
+
+.customer-store-detail-about-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+}
+
+.customer-store-detail-about-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.customer-store-detail-about-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.customer-store-detail-about-list li svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #1e40af;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.customer-store-detail-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.customer-store-detail-reviews-header-card {
+  padding: 2rem;
+}
+
+.customer-store-detail-reviews-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.customer-store-detail-reviews-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.customer-store-detail-reviews-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.customer-store-detail-stars-large {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.customer-store-detail-stars-large svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #f59e0b;
+}
+
+.customer-store-detail-reviews-rating span {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.customer-store-detail-write-review-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #0f172a;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.customer-store-detail-write-review-button:hover {
+  background: #f8fafc;
+  border-color: #1e40af;
+}
+
+.customer-store-detail-write-review-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.customer-store-detail-review-card {
+  padding: 2rem;
+}
+
+.customer-store-detail-review-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.customer-store-detail-review-customer {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.customer-store-detail-review-date {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.customer-store-detail-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.customer-store-detail-review-stars svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.customer-store-detail-review-comment {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0;
+}
+
+.customer-review-stars-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.customer-review-star-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.customer-review-star-button svg {
+  width: 2rem;
+  height: 2rem;
+  color: #f59e0b;
+  transition: all 0.15s;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 28rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  margin: 0;
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.15s;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.modal-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #0f172a;
+  text-align: left;
+}
+
+.modal-input,
+.modal-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: #f3f3f5;
+  color: #0f172a;
+  transition: all 0.15s;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.modal-input:focus,
+.modal-textarea:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.modal-textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.modal-button-primary {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-button-primary:hover:not(:disabled) {
+  background: #1e3a8a;
+}
+
+.modal-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-button-outline {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: white;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-button-outline:hover {
+  background: #f8fafc;
+  border-color: #1e40af;
+}
+
+.modal-text {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .customer-store-detail-header {
+    height: 15rem;
+  }
+
+  .customer-store-detail-header-emoji {
+    font-size: 6rem;
+  }
+
+  .customer-store-detail-content {
+    padding: 0 1rem;
+  }
+
+  .customer-store-detail-info-card > div {
+    padding: 1.5rem;
+  }
+
+  .customer-store-detail-info-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .customer-store-detail-name {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .customer-store-detail-badge {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.625rem;
+  }
+
+  .customer-store-detail-description {
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+  }
+
+  .customer-store-detail-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .customer-store-detail-stat {
+    font-size: 0.8125rem;
+  }
+
+  .customer-store-detail-follow-button {
+    width: 100%;
+    font-size: 0.8125rem;
+    padding: 0.625rem 1.25rem;
+  }
+
+  .customer-store-detail-tabs {
+    padding-bottom: 2rem;
+  }
+
+  .customer-store-detail-tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .customer-store-detail-reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .customer-store-detail-reviews-title {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .customer-store-detail-write-review-button {
+    width: 100%;
+    font-size: 0.8125rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    padding: 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-input,
+  .modal-textarea {
+    font-size: 0.875rem;
+  }
+
+  .modal-button-primary,
+  .modal-button-outline {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .customer-store-detail-header {
+    height: 18rem;
+  }
+
+  .customer-store-detail-name {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+}
+

@@ -1,0 +1,278 @@
+.store-dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.store-dashboard-header {
+  text-align: left;
+}
+
+.store-dashboard-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 2.25rem;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.store-dashboard-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.store-dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .store-dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .store-dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.store-dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .store-dashboard-charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.store-dashboard-chart-card {
+  padding: 1.5rem;
+}
+
+.store-dashboard-chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: #0f172a;
+  margin: 0 0 1.5rem 0;
+  text-align: left;
+}
+
+.store-dashboard-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.store-dashboard-order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.store-dashboard-order-info {
+  flex: 1;
+  text-align: left;
+}
+
+.store-dashboard-order-id {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.store-dashboard-order-details {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.store-dashboard-order-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.store-dashboard-order-amount {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.store-dashboard-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.store-dashboard-badge-completed {
+  background: #10b981;
+}
+
+.store-dashboard-badge-processing {
+  background: #f59e0b;
+}
+
+.store-dashboard-badge-shipped {
+  background: #6366f1;
+}
+
+.store-dashboard-widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .store-dashboard-widgets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.store-dashboard-widget-card {
+  padding: 1.5rem;
+}
+
+.store-dashboard-widget-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  color: #0f172a;
+  margin: 0 0 1rem 0;
+  text-align: left;
+}
+
+.store-dashboard-widget-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.store-dashboard-widget-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.store-dashboard-widget-label {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.store-dashboard-widget-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.store-dashboard-action-button {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border: none;
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.store-dashboard-action-button:hover {
+  background: #e2e8f0;
+}
+
+.store-dashboard-action-button + .store-dashboard-action-button {
+  margin-top: 0.5rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .store-dashboard-page {
+    gap: 1.5rem;
+  }
+
+  .store-dashboard-title {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .store-dashboard-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .store-dashboard-stats-grid {
+    gap: 1rem;
+  }
+
+  .store-dashboard-chart-card {
+    padding: 1rem;
+  }
+
+  .store-dashboard-chart-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .store-dashboard-order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem;
+  }
+
+  .store-dashboard-order-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .store-dashboard-widget-card {
+    padding: 1rem;
+  }
+
+  .store-dashboard-widget-title {
+    font-size: 0.9375rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .store-dashboard-widget-label,
+  .store-dashboard-widget-value {
+    font-size: 0.8125rem;
+  }
+
+  .store-dashboard-action-button {
+    padding: 0.625rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .store-dashboard-title {
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+
+  .store-dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

@@ -1,0 +1,386 @@
+.store-comments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.store-comments-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .store-comments-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.store-comments-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 2.25rem;
+  color: #0f172a;
+  margin: 0;
+  text-align: left;
+}
+
+.store-comments-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+  text-align: left;
+}
+
+.store-comments-pending-badge {
+  padding: 0.25rem 0.75rem;
+  background: #f59e0b;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.store-comments-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .store-comments-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.store-comments-stat-card {
+  padding: 1rem;
+  text-align: left;
+}
+
+.store-comments-stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 0.5rem 0;
+}
+
+.store-comments-stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #0f172a;
+  margin: 0;
+}
+
+.store-comments-rating-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.store-comments-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.store-comments-stars svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.store-comments-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  max-width: 28rem;
+  background: #f8fafc;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.store-comments-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.15s;
+}
+
+.store-comments-tab-active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.store-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.store-comment-card {
+  padding: 1.5rem;
+}
+
+.store-comment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.store-comment-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.store-comment-info {
+  flex: 1;
+  text-align: left;
+}
+
+.store-comment-customer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.store-comment-customer {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  margin: 0;
+}
+
+.store-comment-product {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.store-comment-date {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.store-comment-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.store-comment-rating svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.store-comment-text {
+  font-size: 0.875rem;
+  color: #0f172a;
+  margin: 0;
+  text-align: left;
+}
+
+.store-comment-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.store-comment-approve-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.store-comment-approve-button:hover {
+  background: #059669;
+}
+
+.store-comment-approve-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.store-comment-reject-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.store-comment-reject-button:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.store-comment-reject-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.store-comment-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.store-comment-badge-approved {
+  background: #10b981;
+}
+
+.store-comment-badge-pending {
+  background: #f59e0b;
+}
+
+.store-comment-badge-rejected {
+  background: #ef4444;
+}
+
+.store-comment-badge-default {
+  background: #64748b;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .store-comments-page {
+    gap: 1.5rem;
+  }
+
+  .store-comments-title {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .store-comments-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .store-comments-pending-badge {
+    font-size: 0.8125rem;
+    padding: 0.1875rem 0.625rem;
+  }
+
+  .store-comments-stats-grid {
+    gap: 0.75rem;
+  }
+
+  .store-comments-stat-card {
+    padding: 0.875rem;
+  }
+
+  .store-comments-stat-value {
+    font-size: 1.375rem;
+  }
+
+  .store-comments-stat-label {
+    font-size: 0.8125rem;
+  }
+
+  .store-comments-tabs {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
+    gap: 0.375rem;
+  }
+
+  .store-comments-tab {
+    padding: 0.4375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .store-comment-card {
+    padding: 1.25rem;
+  }
+
+  .store-comment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .store-comment-customer {
+    font-size: 0.8125rem;
+  }
+
+  .store-comment-product {
+    font-size: 0.8125rem;
+  }
+
+  .store-comment-date {
+    font-size: 0.8125rem;
+  }
+
+  .store-comment-rating svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .store-comment-text {
+    font-size: 0.8125rem;
+  }
+
+  .store-comment-actions {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .store-comment-approve-button,
+  .store-comment-reject-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .store-comment-badge {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.625rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .store-comments-title {
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+
+  .store-comments-tabs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+

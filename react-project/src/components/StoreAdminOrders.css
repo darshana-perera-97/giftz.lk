@@ -1,0 +1,517 @@
+.store-orders-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.store-orders-header {
+  text-align: left;
+}
+
+.store-orders-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 2.25rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+.store-orders-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+}
+
+.store-orders-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .store-orders-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.store-orders-stat-card {
+  padding: 1rem;
+  text-align: left;
+}
+
+.store-orders-stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 0.5rem 0;
+}
+
+.store-orders-stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #0f172a;
+  margin: 0;
+}
+
+.store-orders-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .store-orders-filters {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.store-orders-search-container {
+  position: relative;
+  flex: 1;
+}
+
+.store-orders-search-container svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.store-orders-search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: white;
+  color: #0f172a;
+  transition: all 0.15s;
+}
+
+.store-orders-search-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.store-orders-filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: white;
+  color: #0f172a;
+  cursor: pointer;
+  min-width: 12rem;
+}
+
+.store-orders-filter-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.store-orders-table-card {
+  overflow-x: auto;
+}
+
+.store-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.store-orders-table thead {
+  background: #f8fafc;
+}
+
+.store-orders-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  text-align: left;
+}
+
+.store-orders-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #0f172a;
+  border-top: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.store-orders-table-email {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+}
+
+.store-orders-table-actions {
+  text-align: right;
+}
+
+.store-orders-actions-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.store-orders-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  background: white;
+  color: #0f172a;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.store-orders-action-button:hover {
+  background: #f8fafc;
+  border-color: #6366f1;
+}
+
+.store-orders-action-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.store-order-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.store-order-badge-completed {
+  background: #10b981;
+}
+
+.store-order-badge-processing {
+  background: #f59e0b;
+}
+
+.store-order-badge-shipped {
+  background: #6366f1;
+}
+
+.store-order-badge-default {
+  background: #64748b;
+}
+
+.modal-readonly-field {
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  animation: fadeIn 0.15s ease-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 28rem;
+  max-height: calc(100vh - 1rem);
+  margin: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: slideUp 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  margin: 0;
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  text-align: left;
+}
+
+.modal-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #0f172a;
+  text-align: left;
+}
+
+.modal-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: #f3f3f5;
+  color: #0f172a;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  text-align: left;
+}
+
+.modal-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+@media (min-width: 640px) {
+  .modal-actions {
+    flex-direction: row;
+  }
+}
+
+.modal-button-primary {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-button-primary:hover {
+  background: #4f46e5;
+}
+
+.modal-button-outline {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #0f172a;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-button-outline:hover {
+  background: #f8fafc;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .store-orders-page {
+    gap: 1.5rem;
+  }
+
+  .store-orders-title {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .store-orders-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .store-orders-stats-grid {
+    gap: 0.75rem;
+  }
+
+  .store-orders-stat-card {
+    padding: 0.875rem;
+  }
+
+  .store-orders-stat-value {
+    font-size: 1.75rem;
+  }
+
+  .store-orders-stat-label {
+    font-size: 0.8125rem;
+  }
+
+  .store-orders-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .store-orders-search-input {
+    height: 2.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .store-orders-filter-select {
+    height: 2.75rem;
+    font-size: 0.8125rem;
+    width: 100%;
+  }
+
+  .store-orders-table {
+    font-size: 0.8125rem;
+    overflow-x: auto;
+  }
+
+  .store-orders-table th,
+  .store-orders-table td {
+    padding: 0.75rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .store-orders-table th:first-child,
+  .store-orders-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+  }
+
+  .store-orders-status-badge {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.625rem;
+  }
+
+  .store-orders-view-button {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.625rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    padding: 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-select {
+    font-size: 0.875rem;
+  }
+
+  .modal-button-primary,
+  .modal-button-outline {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .store-orders-title {
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+
+  .store-orders-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

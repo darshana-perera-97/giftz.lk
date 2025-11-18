@@ -1,0 +1,244 @@
+.customer-product-card {
+  transition: all 0.3s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-product-card:hover {
+  transform: translateY(-4px);
+}
+
+.customer-product-card-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+.customer-product-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.customer-product-card-image-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.customer-product-card-image-content.customer-product-card-image-hidden {
+  opacity: 0;
+}
+
+.customer-product-card-image-zoom {
+  transform: scale(1.1);
+}
+
+.customer-product-card-image-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.customer-product-card-image-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #1e40af;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.customer-product-card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.customer-product-card-image-placeholder svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.customer-product-card-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  text-align: left;
+}
+
+.customer-product-card-info {
+  flex: 1;
+  text-align: left;
+}
+
+.customer-product-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+  cursor: pointer;
+  transition: color 0.15s;
+  text-align: left;
+}
+
+.customer-product-card-name:hover {
+  color: #1e40af;
+}
+
+.customer-product-card-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0 0 0.75rem 0;
+  text-align: left;
+}
+
+.customer-product-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.customer-product-card-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.customer-product-card-stars svg {
+  width: 1rem;
+  height: 1rem;
+  color: #f59e0b;
+}
+
+.customer-product-card-reviews {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.customer-product-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.customer-product-card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.customer-product-card-price-symbol {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.customer-product-card-price-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.customer-product-card-add-button {
+  padding: 0.5rem 1rem;
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.customer-product-card-add-button:hover {
+  background: #1e3a8a;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .customer-product-card-content {
+    padding: 0.875rem;
+    gap: 0.625rem;
+  }
+
+  .customer-product-card-name {
+    font-size: 0.9375rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .customer-product-card-description {
+    font-size: 0.8125rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .customer-product-card-stars svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .customer-product-card-reviews {
+    font-size: 0.6875rem;
+  }
+
+  .customer-product-card-price-symbol {
+    font-size: 0.8125rem;
+  }
+
+  .customer-product-card-price-amount {
+    font-size: 1.125rem;
+  }
+
+  .customer-product-card-add-button {
+    padding: 0.4375rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .customer-product-card-footer {
+    gap: 0.75rem;
+    padding-top: 0.625rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .customer-product-card-name {
+    font-size: 0.96875rem;
+  }
+
+  .customer-product-card-price-amount {
+    font-size: 1.1875rem;
+  }
+}
+

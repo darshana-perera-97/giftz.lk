@@ -1,0 +1,215 @@
+.store-login-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #6366f1, #4f46e5, #4338ca);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.store-login-card {
+  width: 100%;
+  max-width: 28rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.store-login-header {
+  background: linear-gradient(to bottom right, #6366f1, #4f46e5);
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.store-login-icon {
+  width: 4rem;
+  height: 4rem;
+  background: #f59e0b;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.store-login-icon svg {
+  color: #4338ca;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.store-login-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.store-login-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.store-login-form {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.store-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.store-login-label {
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.store-login-input {
+  height: 3rem;
+  width: 100%;
+  padding: 0 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: #f3f3f5;
+  transition: all 0.15s;
+  box-sizing: border-box;
+}
+
+.store-login-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.store-login-input::placeholder {
+  color: #94a3b8;
+}
+
+.store-login-button {
+  width: 100%;
+  height: 3rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.store-login-button:hover {
+  background: #4f46e5;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.store-login-button:active {
+  transform: scale(0.98);
+}
+
+.store-login-footer {
+  text-align: center;
+}
+
+.store-login-forgot {
+  color: #6366f1;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+}
+
+.store-login-forgot:hover {
+  color: #4f46e5;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+  .store-login-container {
+    padding: 1rem;
+  }
+
+  .store-login-card {
+    max-width: 100%;
+    border-radius: 0.75rem;
+  }
+
+  .store-login-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .store-login-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .store-login-icon svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .store-login-title {
+    font-size: 1.125rem;
+  }
+
+  .store-login-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .store-login-form {
+    padding: 2rem 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .store-login-label {
+    font-size: 0.8125rem;
+  }
+
+  .store-login-input {
+    height: 2.75rem;
+    font-size: 0.9375rem;
+    padding: 0 0.625rem;
+  }
+
+  .store-login-button {
+    height: 2.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .store-login-forgot {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .store-login-container {
+    padding: 1.5rem;
+  }
+
+  .store-login-card {
+    max-width: 26rem;
+  }
+}
+

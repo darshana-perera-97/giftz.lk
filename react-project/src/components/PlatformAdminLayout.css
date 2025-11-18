@@ -1,0 +1,23 @@
+.platform-admin-layout {
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.platform-admin-content {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 4rem);
+}
+
+.platform-admin-main {
+  flex: 1;
+  padding: 2rem;
+  background: #fff;
+  overflow-y: auto;
+}
+
