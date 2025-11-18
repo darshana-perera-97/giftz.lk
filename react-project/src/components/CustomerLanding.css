@@ -239,7 +239,7 @@
 /* Banner Section */
 .customer-banner-section {
   position: relative;
-  height: 20rem;
+  height: 28rem;
   overflow: hidden;
   max-width: 100%;
   width: 100%;
@@ -659,6 +659,12 @@
   .customer-hero-actions {
     flex-direction: column;
     gap: 0.75rem;
+    width: 100%;
+  }
+
+  .customer-hero-button-primary,
+  .customer-hero-button-outline {
+    width: 100%;
   }
 
   .customer-hero-nav {
@@ -672,6 +678,19 @@
 
   .customer-hero-nav-right {
     right: 1rem;
+  }
+
+  .customer-hero-dots {
+    bottom: 1rem;
+  }
+
+  .customer-hero-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+
+  .customer-hero-dot-active {
+    width: 1.5rem;
   }
 
   .customer-search-section {
@@ -697,6 +716,7 @@
     height: 3rem;
     font-size: 0.875rem;
     padding: 0 1.5rem;
+    width: 100%;
   }
 
   .customer-section {
@@ -754,6 +774,10 @@
     font-size: 0.875rem;
   }
 
+  .customer-seller-form {
+    max-width: 100%;
+  }
+
   .customer-seller-input {
     height: 2.75rem;
     font-size: 0.875rem;
@@ -767,10 +791,12 @@
   .customer-banner-section {
     flex-direction: column;
     height: auto;
+    min-height: 20rem;
     padding: 1.5rem 1rem;
     gap: 1.25rem;
-    margin: 1.5rem auto;
+    margin: 1.5rem 1rem;
     border-radius: 1rem;
+    max-width: calc(100% - 2rem);
   }
 
   .customer-banner-content {
@@ -785,6 +811,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 0 0 auto;
   }
 
   .customer-banner-image {
@@ -833,14 +860,13 @@
     font-size: 0.6875rem;
   }
 
-  .customer-banner-features {
-    gap: 0.5rem;
+  .customer-banner-list {
+    gap: 0.375rem;
     margin-bottom: 1.25rem;
   }
 
-  .customer-banner-feature {
+  .customer-banner-list li {
     font-size: 0.8125rem;
-    padding: 0.375rem 0;
   }
 
   .customer-banner-actions {
@@ -887,7 +913,7 @@
 
   .customer-banner-section {
     height: auto;
-    min-height: 16rem;
+    min-height: 22rem;
     gap: 1.5rem;
     padding: 2rem 2rem;
     margin: 2.5rem auto;
@@ -969,7 +995,7 @@
   }
 
   .customer-banner-section {
-    height: 20rem;
+    height: 28rem;
     padding: 2.5rem 3rem;
     gap: 2rem;
     margin: 3rem auto;

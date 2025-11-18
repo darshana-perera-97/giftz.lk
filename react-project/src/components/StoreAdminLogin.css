@@ -1,6 +1,6 @@
 .store-login-container {
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #6366f1, #4f46e5, #4338ca);
+  background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,67 +9,55 @@
 
 .store-login-card {
   width: 100%;
-  max-width: 28rem;
+  max-width: 24rem;
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  animation: fadeInUp 0.4s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .store-login-header {
-  background: linear-gradient(to bottom right, #6366f1, #4f46e5);
-  padding: 2.5rem;
+  padding: 3rem 2rem 2rem;
   text-align: center;
 }
 
 .store-login-icon {
-  width: 4rem;
-  height: 4rem;
-  background: #f59e0b;
-  border-radius: 0.75rem;
+  width: 3rem;
+  height: 3rem;
+  background: transparent;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 1.5rem;
 }
 
 .store-login-icon svg {
-  color: #4338ca;
-  width: 2.25rem;
-  height: 2.25rem;
+  color: #1e40af;
+  width: 2rem;
+  height: 2rem;
 }
 
 .store-login-title {
-  color: white;
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.025em;
 }
 
 .store-login-subtitle {
-  color: rgba(255, 255, 255, 0.7);
-  margin-top: 0.5rem;
+  color: #64748b;
+  margin: 0;
   font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .store-login-form {
-  padding: 2.5rem;
+  padding: 0 2rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .store-login-field {
@@ -86,21 +74,22 @@
 }
 
 .store-login-input {
-  height: 3rem;
+  height: 2.75rem;
   width: 100%;
-  padding: 0 0.75rem;
+  padding: 0 1rem;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  background-color: #f3f3f5;
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
+  background-color: white;
+  color: #0f172a;
   transition: all 0.15s;
   box-sizing: border-box;
 }
 
 .store-login-input:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
 }
 
 .store-login-input::placeholder {
@@ -109,40 +98,40 @@
 
 .store-login-button {
   width: 100%;
-  height: 3rem;
-  background: #6366f1;
+  height: 2.75rem;
+  background: #1e40af;
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  margin-top: 0.5rem;
 }
 
 .store-login-button:hover {
-  background: #4f46e5;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background: #1e3a8a;
 }
 
 .store-login-button:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
 }
 
 .store-login-footer {
   text-align: center;
+  margin-top: 0.5rem;
 }
 
 .store-login-forgot {
-  color: #6366f1;
+  color: #64748b;
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.15s;
 }
 
 .store-login-forgot:hover {
-  color: #4f46e5;
+  color: #1e40af;
 }
 
 /* Responsive Styles */
@@ -153,25 +142,26 @@
 
   .store-login-card {
     max-width: 100%;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
   }
 
   .store-login-header {
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 1.5rem 1.5rem;
   }
 
   .store-login-icon {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1.25rem;
   }
 
   .store-login-icon svg {
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .store-login-title {
-    font-size: 1.125rem;
+    font-size: 1.375rem;
   }
 
   .store-login-subtitle {
@@ -179,8 +169,8 @@
   }
 
   .store-login-form {
-    padding: 2rem 1.5rem;
-    gap: 1.25rem;
+    padding: 0 1.5rem 2rem;
+    gap: 1.125rem;
   }
 
   .store-login-label {
@@ -188,13 +178,13 @@
   }
 
   .store-login-input {
-    height: 2.75rem;
+    height: 2.625rem;
     font-size: 0.9375rem;
-    padding: 0 0.625rem;
+    padding: 0 0.875rem;
   }
 
   .store-login-button {
-    height: 2.75rem;
+    height: 2.625rem;
     font-size: 0.9375rem;
   }
 
@@ -209,7 +199,7 @@
   }
 
   .store-login-card {
-    max-width: 26rem;
+    max-width: 22rem;
   }
 }
 

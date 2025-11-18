@@ -136,6 +136,10 @@
     padding: 3rem 1rem;
   }
 
+  .customer-all-products-header-content {
+    padding: 0;
+  }
+
   .customer-all-products-title {
     font-size: 1.75rem;
     line-height: 2rem;
@@ -143,6 +147,11 @@
 
   .customer-all-products-subtitle {
     font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .customer-all-products-filters {
+    padding: 0 1rem;
   }
 
   .customer-all-products-filters-content {
@@ -151,15 +160,21 @@
     gap: 0.75rem;
   }
 
+  .customer-all-products-search-wrapper {
+    width: 100%;
+  }
+
   .customer-all-products-search-input {
     height: 2.75rem;
     font-size: 0.8125rem;
+    width: 100%;
   }
 
   .customer-all-products-filter-select {
     height: 2.75rem;
     font-size: 0.8125rem;
     min-width: 100%;
+    width: 100%;
   }
 
   .customer-all-products-content {
@@ -172,6 +187,21 @@
 
   .customer-all-products-grid {
     gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-all-products-header {
+    padding: 2rem 1rem;
+  }
+
+  .customer-all-products-title {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .customer-all-products-subtitle {
+    font-size: 0.875rem;
   }
 }
 
