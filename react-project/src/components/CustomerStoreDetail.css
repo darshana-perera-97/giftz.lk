@@ -10,6 +10,9 @@
   position: relative;
   height: 20rem;
   background: linear-gradient(to bottom right, #1e40af, #1e3a8a, #1e293b);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
 }
 
@@ -21,6 +24,13 @@
   justify-content: center;
   font-size: 9rem;
   opacity: 0.2;
+}
+
+.customer-store-detail-header-image {
+  max-width: 10rem;
+  max-height: 10rem;
+  object-fit: contain;
+  opacity: 0.85;
 }
 
 .customer-store-detail-content {
@@ -85,6 +95,15 @@
   margin: 0 0 1.5rem 0;
 }
 
+.customer-store-detail-unavailable-text {
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border-radius: 0.5rem;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
 .customer-store-detail-stats {
   display: flex;
   align-items: center;
@@ -145,6 +164,17 @@
 .customer-store-detail-tabs {
   margin-top: 2rem;
   padding-bottom: 4rem;
+}
+
+.customer-store-detail-unavailable-card {
+  margin-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.customer-store-detail-unavailable-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #0f172a;
 }
 
 .customer-store-detail-tabs-list {

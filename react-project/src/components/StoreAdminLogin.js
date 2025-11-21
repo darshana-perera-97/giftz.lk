@@ -1,14 +1,42 @@
 import { useState } from 'react';
 import './StoreAdminLogin.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
 function StoreAdminLogin({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onLogin) {
-      onLogin();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/store-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Invalid email or password');
+        return;
+      }
+
+      if (onLogin) {
+        onLogin(data.store);
+      }
+    } catch (err) {
+      setError('Unable to reach the server. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,8 +91,10 @@ function StoreAdminLogin({ onLogin }) {
             />
           </div>
 
-          <button type="submit" className="store-login-button">
-            Sign In
+          {error && <p className="store-login-error">{error}</p>}
+
+          <button type="submit" className="store-login-button" disabled={isLoading}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
 
           <div className="store-login-footer">

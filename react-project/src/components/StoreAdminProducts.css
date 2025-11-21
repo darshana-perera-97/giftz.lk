@@ -58,6 +58,27 @@
   background: #4f46e5;
 }
 
+.store-products-create-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.store-products-status {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.store-products-status-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
 .store-products-search {
   position: relative;
   display: flex;
@@ -158,6 +179,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.modal-image-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .modal-image-preview-placeholder {
@@ -201,6 +229,16 @@
   height: 0.875rem;
 }
 
+.modal-error {
+  font-size: 0.875rem;
+  color: #b91c1c;
+  margin: 0.5rem 0 0;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -231,7 +269,7 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
   max-width: 42rem;
-  max-height: calc(100vh - 1rem);
+  max-height: 80vh;
   margin: auto;
   overflow-y: auto;
   overflow-x: hidden;

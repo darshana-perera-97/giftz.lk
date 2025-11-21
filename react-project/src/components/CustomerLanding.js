@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerTopNav from './CustomerTopNav';
 import CartSidebar from './CartSidebar';
@@ -6,6 +6,7 @@ import CustomerStoreCard from './CustomerStoreCard';
 import CustomerProductCard from './CustomerProductCard';
 import CustomerFooter from './CustomerFooter';
 import ToastContainer, { toast } from './ToastContainer';
+import { fetchItems, fetchStores, resolveMediaUrl } from '../utils/api';
 import './CustomerLanding.css';
 
 // Icon components
@@ -70,24 +71,20 @@ const heroSlides = [
   },
 ];
 
-const featuredStores = [
-  { id: '1', name: 'Luxury Gifts Co.', description: 'Premium luxury gifts and exclusive collections', productCount: 45, status: 'active', icon: '🎁', image: 'https://images.unsplash.com/photo-1700142678566-601b048b39db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBnaWZ0c3xlbnwxfHx8fDE3NjI0ODQ5NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral' },
-  { id: '2', name: 'Artisan Crafts', description: 'Handmade artisan products from local creators', productCount: 32, status: 'active', icon: '🎨', image: 'https://images.unsplash.com/photo-1669207261271-a0041d4b0948?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwc3RvcmV8ZW58MXx8fHwxNzYyNDg0OTY3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral' },
-  { id: '3', name: 'Personalized Treasures', description: 'Custom personalized gifts for every occasion', productCount: 28, status: 'active', icon: '✨', image: 'https://images.unsplash.com/photo-1625552185153-7a8d8f3794a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnaWZ0JTIwYm94JTIwcHJlc2VudHxlbnwxfHx8fDE3NjI0MzI4MzN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral' },
-];
-
-const featuredProducts = [
-  { id: '1', name: 'Premium Watch', description: 'Luxury timepiece with premium materials', price: 299.99, rating: 5, reviews: 128, image: 'https://images.unsplash.com/photo-1760804876422-7efb73b58048?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwcHJvZHVjdHxlbnwxfHx8fDE3NjI0ODQ5Njd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral' },
-  { id: '2', name: 'Luxury Leather Bag', description: 'Handcrafted leather bag', price: 399.99, rating: 5, reviews: 94 },
-  { id: '3', name: 'Designer Sunglasses', description: 'Stylish UV protection eyewear', price: 189.99, rating: 4, reviews: 67 },
-  { id: '4', name: 'Premium Gift Set', description: 'Curated collection of luxury items', price: 149.99, rating: 5, reviews: 203 },
-];
+const MAX_FEATURED_STORES = 3;
+const MAX_FEATURED_PRODUCTS = 4;
 
 function CustomerLanding() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [items, setItems] = useState([]);
+  const [isLoadingStores, setIsLoadingStores] = useState(false);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
+  const [storesError, setStoresError] = useState('');
+  const [itemsError, setItemsError] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -96,10 +93,127 @@ function CustomerLanding() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    let ignore = false;
+    const loadStores = async () => {
+      try {
+        setIsLoadingStores(true);
+        const data = await fetchStores();
+        if (!ignore) {
+          setStores(Array.isArray(data) ? data : []);
+          setStoresError('');
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load stores', error);
+          setStoresError('Unable to load stores right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoadingStores(false);
+        }
+      }
+    };
+    loadStores();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const loadItems = async () => {
+      try {
+        setIsLoadingItems(true);
+        const data = await fetchItems({ status: 'active' });
+        if (!ignore) {
+          setItems(Array.isArray(data) ? data : []);
+          setItemsError('');
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load items', error);
+          setItemsError('Unable to load items right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoadingItems(false);
+        }
+      }
+    };
+    loadItems();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const activeItems = useMemo(
+    () => items.filter((item) => item.status === 'active'),
+    [items]
+  );
+
+  const storeLookup = useMemo(() => {
+    return stores.reduce((acc, store) => {
+      acc[store.id] = store;
+      return acc;
+    }, {});
+  }, [stores]);
+
+  const activeStoreIds = useMemo(
+    () => stores.filter((store) => store.status === 'active').map((store) => store.id),
+    [stores]
+  );
+
+  const activeStoreIdSet = useMemo(() => new Set(activeStoreIds), [activeStoreIds]);
+
+  const storeItemCounts = useMemo(() => {
+    return activeItems.reduce((acc, item) => {
+      if (!item.storeId || !activeStoreIdSet.has(item.storeId)) {
+        return acc;
+      }
+      acc[item.storeId] = (acc[item.storeId] || 0) + 1;
+      return acc;
+    }, {});
+  }, [activeItems, activeStoreIdSet]);
+
+  const featuredStores = useMemo(() => {
+    return stores
+      .filter((store) => activeStoreIdSet.has(store.id))
+      .map((store) => ({
+        ...store,
+        productCount: storeItemCounts[store.id] ?? store.productCount ?? 0,
+        image: resolveMediaUrl(store.image),
+        icon: resolveMediaUrl(store.icon),
+      }))
+      .slice(0, MAX_FEATURED_STORES);
+  }, [storeItemCounts, stores]);
+
+  const featuredProducts = useMemo(() => {
+    return activeItems
+      .filter((item) => (item.storeId ? activeStoreIdSet.has(item.storeId) : false))
+      .slice()
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      )
+      .slice(0, MAX_FEATURED_PRODUCTS)
+      .map((item) => ({
+        ...item,
+        price: Number(item.price) || 0,
+        image: resolveMediaUrl(item.images?.[0]),
+      }));
+  }, [activeItems, activeStoreIdSet]);
+
   const handleAddToCart = (productId) => {
-    const product = featuredProducts.find(p => p.id === productId);
+    const product = activeItems.find((p) => p.id === productId);
     if (product) {
+      if (!product.storeId || !activeStoreIdSet.has(product.storeId)) {
+        toast.error('This product is not available right now.');
+        return;
+      }
       const existingItem = cartItems.find(item => item.id === productId);
+      const resolvedImage = resolveMediaUrl(product.images?.[0]);
+      const storeName = storeLookup[product.storeId]?.name || 'Featured Store';
       if (existingItem) {
         setCartItems(cartItems.map(item =>
           item.id === productId
@@ -111,10 +225,10 @@ function CustomerLanding() {
         setCartItems([...cartItems, {
           id: productId,
           name: product.name,
-          price: product.price,
+          price: Number(product.price) || 0,
           quantity: 1,
-          image: product.image,
-          storeName: 'Featured Store'
+          image: resolvedImage,
+          storeName,
         }]);
         toast.success(`${product.name} added to cart`);
       }
@@ -254,32 +368,48 @@ function CustomerLanding() {
       <section className="customer-section">
         <div className="customer-section-header">
           <h2 className="customer-section-title">Featured Stores</h2>
-          <p className="customer-section-subtitle">Discover our handpicked selection of premium stores</p>
+          <p className="customer-section-subtitle">
+            {storesError || 'Discover our handpicked selection of premium stores'}
+          </p>
         </div>
-        
-        <div className="customer-stores-grid">
-          {featuredStores.map((store) => (
-            <CustomerStoreCard key={store.id} {...store} />
-          ))}
-        </div>
+
+        {isLoadingStores ? (
+          <p className="customer-section-subtitle">Loading available stores...</p>
+        ) : featuredStores.length === 0 ? (
+          <p className="customer-section-subtitle">No stores available yet. Please check back soon.</p>
+        ) : (
+          <div className="customer-stores-grid">
+            {featuredStores.map((store) => (
+              <CustomerStoreCard key={store.id} {...store} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Featured Products */}
       <section className="customer-section customer-section-gray">
         <div className="customer-section-header">
           <h2 className="customer-section-title">Trending Gifts</h2>
-          <p className="customer-section-subtitle">Most popular gifts this season</p>
+          <p className="customer-section-subtitle">
+            {itemsError || 'Most popular gifts this season'}
+          </p>
         </div>
         
-        <div className="customer-products-grid">
-          {featuredProducts.map((product) => (
-            <CustomerProductCard
-              key={product.id}
-              {...product}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </div>
+        {isLoadingItems ? (
+          <p className="customer-section-subtitle">Loading featured gifts...</p>
+        ) : featuredProducts.length === 0 ? (
+          <p className="customer-section-subtitle">No items available yet. New gifts will appear here soon.</p>
+        ) : (
+          <div className="customer-products-grid">
+            {featuredProducts.map((product) => (
+              <CustomerProductCard
+                key={product.id}
+                {...product}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Banner Section 2 */}

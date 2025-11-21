@@ -1,7 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PlatformAdminLayout from './PlatformAdminLayout';
 import PlatformAdminStoreCard from './PlatformAdminStoreCard';
 import './PlatformAdminStores.css';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
+const resolveMediaUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  if (url.startsWith('/media')) {
+    const base = API_BASE_URL.replace(/\/$/, '');
+    return `${base}${url}`;
+  }
+  return url;
+};
 
 // Icon components
 const PlusIcon = () => (
@@ -48,17 +60,20 @@ const sampleStoreIcons = {
   kids: '/images/store-icons/kids-wonderland.svg',
 };
 
-const mockStores = [
-  { id: '1', name: 'Luxury Gifts Co.', description: 'Premium luxury gifts and exclusive collections', productCount: 45, status: 'active', revenue: '$12,450', icon: sampleStoreIcons.luxury, email: 'admin@luxurygifts.com', contactNumber: '+1 (555) 123-4567', package: 'Pro', themeColor: '#6366f1' },
-  { id: '2', name: 'Artisan Crafts', description: 'Handmade artisan products from local creators', productCount: 32, status: 'active', revenue: '$8,920', icon: sampleStoreIcons.artisan, email: 'admin@artisancrafts.com', contactNumber: '+1 (555) 234-5678', package: 'Basic', themeColor: '#8b5cf6' },
-  { id: '3', name: 'Tech Gadgets Store', description: 'Latest tech gifts and innovative gadgets', productCount: 67, status: 'hidden', revenue: '$15,670', icon: sampleStoreIcons.tech, email: 'admin@techgadgets.com', contactNumber: '+1 (555) 345-6789', package: 'Enterprise', themeColor: '#3b82f6' },
-  { id: '4', name: 'Personalized Treasures', description: 'Custom personalized gifts for every occasion', productCount: 28, status: 'active', revenue: '$6,340', icon: sampleStoreIcons.personalized, email: 'admin@personalizedtreasures.com', contactNumber: '+1 (555) 456-7890', package: 'Pro', themeColor: '#ec4899' },
-  { id: '5', name: 'Eco-Friendly Gifts', description: 'Sustainable and environmentally conscious products', productCount: 41, status: 'active', revenue: '$9,820', icon: sampleStoreIcons.eco, email: 'admin@ecofriendly.com', contactNumber: '+1 (555) 567-8901', package: 'Basic', themeColor: '#10b981' },
-  { id: '6', name: 'Kids Wonderland', description: 'Amazing gifts and toys for children', productCount: 89, status: 'active', revenue: '$18,450', icon: sampleStoreIcons.kids, email: 'admin@kidswonderland.com', contactNumber: '+1 (555) 678-9012', package: 'Enterprise', themeColor: '#f59e0b' },
-];
+const initialCreateFormState = Object.freeze({
+  name: '',
+  contactNumber: '',
+  email: '',
+  password: '',
+  description: '',
+  package: 'basic',
+  themeColor: '#6366f1',
+  icon: '',
+  featuredImage: '',
+});
 
 function PlatformAdminStores() {
-  const [stores, setStores] = useState(mockStores);
+  const [stores, setStores] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -66,18 +81,46 @@ function PlatformAdminStores() {
   const [selectedStore, setSelectedStore] = useState(null);
   const [createdStore, setCreatedStore] = useState(null);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isLoadingStores, setIsLoadingStores] = useState(true);
+  const [storesError, setStoresError] = useState('');
+  const [createError, setCreateError] = useState('');
+  const [isSubmittingStore, setIsSubmittingStore] = useState(false);
+  const [editFormData, setEditFormData] = useState(null);
+  const [isConfirmEditOpen, setIsConfirmEditOpen] = useState(false);
+  const [pendingEditData, setPendingEditData] = useState(null);
+  const [editErrorMessage, setEditErrorMessage] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   
   // Form state for create store
-  const [createFormData, setCreateFormData] = useState({
-    name: '',
-    contactNumber: '',
-    email: '',
-    password: '',
-    description: '',
-    package: 'basic',
-    themeColor: '#6366f1',
-    icon: '',
-  });
+  const [createFormData, setCreateFormData] = useState({ ...initialCreateFormState });
+
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        setIsLoadingStores(true);
+        setStoresError('');
+        const response = await fetch(`${API_BASE_URL}/api/stores`);
+        if (!response.ok) {
+          throw new Error('Failed to load stores');
+        }
+        const data = await response.json();
+        const normalizedStores = Array.isArray(data.stores)
+          ? data.stores.map((store) => ({
+              ...store,
+              icon: resolveMediaUrl(store.icon),
+              image: resolveMediaUrl(store.image),
+            }))
+          : [];
+        setStores(normalizedStores);
+      } catch (error) {
+        setStoresError('Unable to load stores. Please try again later.');
+      } finally {
+        setIsLoadingStores(false);
+      }
+    };
+
+    fetchStores();
+  }, []);
   
   const filteredStores = stores.filter(store =>
     store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,46 +144,165 @@ function PlatformAdminStores() {
 
   const handleEdit = (store) => {
     setSelectedStore(store);
+    setEditFormData({
+      name: store.name || '',
+      contactNumber: store.contactNumber || '',
+      email: store.email || '',
+      description: store.description || '',
+      package: (store.package || 'basic').toLowerCase(),
+      themeColor: store.themeColor || '#6366f1',
+      password: '',
+    });
+    setEditErrorMessage('');
     setIsEditModalOpen(true);
   };
 
-  const handleCreateStore = (e) => {
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedStore(null);
+    setEditFormData(null);
+    setPendingEditData(null);
+    setIsConfirmEditOpen(false);
+    setEditErrorMessage('');
+    setIsSavingEdit(false);
+  };
+
+  const handleSubmitEdit = (e) => {
     e.preventDefault();
-    
-    // Create new store object
-    const newStore = {
-      id: String(stores.length + 1),
-      name: createFormData.name,
-      description: createFormData.description,
-      productCount: 0,
-      status: 'active',
-      revenue: '$0',
-      icon: createFormData.icon || '/images/store-icons/luxury-gifts.svg',
-      email: createFormData.email,
-      contactNumber: createFormData.contactNumber,
-      package: createFormData.package.charAt(0).toUpperCase() + createFormData.package.slice(1),
-      themeColor: createFormData.themeColor,
+    if (!selectedStore || !editFormData) {
+      closeEditModal();
+      return;
+    }
+
+    const trimmedPassword = (editFormData.password || '').trim();
+    const updatedData = {
+      name: editFormData.name.trim(),
+      contactNumber: editFormData.contactNumber.trim(),
+      email: editFormData.email.trim(),
+      description: editFormData.description.trim(),
+      package: editFormData.package,
+      themeColor: editFormData.themeColor,
+      password: trimmedPassword.length >= 6 ? trimmedPassword : undefined,
     };
 
-    // Add to stores list
-    setStores([...stores, newStore]);
-    
-    // Set created store and show success modal
-    setCreatedStore(newStore);
-    setIsCreateModalOpen(false);
-    setIsSuccessModalOpen(true);
-    
-    // Reset form
-    setCreateFormData({
-      name: '',
-      contactNumber: '',
-      email: '',
-      password: '',
-      description: '',
-      package: 'basic',
-      themeColor: '#6366f1',
-      icon: '',
+    const hasFieldChanges = ['name', 'contactNumber', 'email', 'description', 'package', 'themeColor'].some((key) => {
+      const originalValue = key === 'package'
+        ? (selectedStore.package || 'basic').toLowerCase()
+        : (selectedStore[key] || '').toString().trim();
+      const newValue = updatedData[key]?.toString().trim();
+      return originalValue !== newValue;
     });
+
+    const hasPasswordChange = Boolean(updatedData.password);
+
+    if (!hasFieldChanges && !hasPasswordChange) {
+      closeEditModal();
+      return;
+    }
+
+    setPendingEditData(updatedData);
+    setIsConfirmEditOpen(true);
+  };
+
+  const confirmEditChanges = async () => {
+    if (!pendingEditData || !selectedStore) {
+      setIsConfirmEditOpen(false);
+      return;
+    }
+
+    try {
+      setIsSavingEdit(true);
+      setEditErrorMessage('');
+
+      const response = await fetch(`${API_BASE_URL}/api/stores/${selectedStore.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pendingEditData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success || !data.store) {
+        throw new Error(data.message || 'Failed to update store');
+      }
+
+      const updatedStore = {
+        ...data.store,
+        icon: resolveMediaUrl(data.store.icon),
+        image: resolveMediaUrl(data.store.image),
+      };
+
+      setStores((prev) =>
+        prev.map((store) => (store.id === updatedStore.id ? updatedStore : store))
+      );
+      closeEditModal();
+    } catch (error) {
+      setEditErrorMessage(error.message || 'Failed to update store');
+    } finally {
+      setIsSavingEdit(false);
+      setIsConfirmEditOpen(false);
+      setPendingEditData(null);
+    }
+  };
+
+  const handleCreateStore = async (e) => {
+    e.preventDefault();
+    setCreateError('');
+    setIsSubmittingStore(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...createFormData,
+          icon: createFormData.icon || sampleStoreIcons.luxury,
+          featuredImage: createFormData.featuredImage || createFormData.icon || '',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to create store');
+      }
+
+      const newStore = {
+        ...data.store,
+        icon: resolveMediaUrl(data.store?.icon),
+        image: resolveMediaUrl(data.store?.image),
+      };
+      setStores((prev) => [...prev, newStore]);
+      setCreatedStore(newStore);
+      setIsCreateModalOpen(false);
+      setIsSuccessModalOpen(true);
+      setCreateFormData({ ...initialCreateFormState });
+    } catch (error) {
+      setCreateError(error.message || 'Failed to create store');
+    } finally {
+      setIsSubmittingStore(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setCreateError('');
+    setIsCreateModalOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateError('');
+    setIsSubmittingStore(false);
+    setCreateFormData({ ...initialCreateFormState });
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+    setCreatedStore(null);
   };
 
   return (
@@ -154,7 +316,7 @@ function PlatformAdminStores() {
           
           <button 
             className="stores-create-button"
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={openCreateModal}
           >
             <PlusIcon />
             <span>Create Store</span>
@@ -178,27 +340,35 @@ function PlatformAdminStores() {
           </button>
         </div>
 
-        <div className="stores-grid">
-          {filteredStores.map((store) => (
-            <PlatformAdminStoreCard
-              key={store.id}
-              {...store}
-              onEdit={() => handleEdit(store)}
-              onToggleVisibility={(visible) => handleToggleVisibility(store.id, visible)}
-              variant="admin"
-            />
-          ))}
-        </div>
+        {isLoadingStores ? (
+          <div className="stores-status-message">Loading stores...</div>
+        ) : storesError ? (
+          <div className="stores-status-message stores-error">{storesError}</div>
+        ) : filteredStores.length === 0 ? (
+          <div className="stores-status-message">No stores found. Try adjusting your search.</div>
+        ) : (
+          <div className="stores-grid">
+            {filteredStores.map((store) => (
+              <PlatformAdminStoreCard
+                key={store.id}
+                {...store}
+                onEdit={() => handleEdit(store)}
+                onToggleVisibility={(visible) => handleToggleVisibility(store.id, visible)}
+                variant="admin"
+              />
+            ))}
+          </div>
+        )}
 
         {/* Create Store Modal */}
         {isCreateModalOpen && (
-          <div className="modal-overlay" onClick={() => setIsCreateModalOpen(false)}>
+          <div className="modal-overlay" onClick={closeCreateModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2 className="modal-title">Create New Store</h2>
                 <button 
                   className="modal-close"
-                  onClick={() => setIsCreateModalOpen(false)}
+                  onClick={closeCreateModal}
                 >
                   <XIcon />
                 </button>
@@ -292,11 +462,11 @@ function PlatformAdminStores() {
                       accept="image/png,image/jpeg,image/jpg" 
                       className="modal-input"
                       onChange={(e) => {
-                        const file = e.target.files[0];
+                        const file = e.target.files?.[0];
                         if (file) {
                           const reader = new FileReader();
                           reader.onloadend = () => {
-                            setCreateFormData({...createFormData, icon: reader.result});
+                            setCreateFormData((prev) => ({ ...prev, icon: reader.result }));
                           };
                           reader.readAsDataURL(file);
                         }
@@ -306,16 +476,31 @@ function PlatformAdminStores() {
                   </div>
                   <div className="modal-form-group">
                     <label className="modal-label">Store Featured Image</label>
-                    <input type="file" accept="image/*" className="modal-input" />
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="modal-input"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setCreateFormData((prev) => ({ ...prev, featuredImage: reader.result }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
                   </div>
+                  {createError && <p className="modal-error">{createError}</p>}
                   <div className="modal-actions">
-                    <button type="submit" className="modal-button-primary">
-                      Create Store
+                    <button type="submit" className="modal-button-primary" disabled={isSubmittingStore}>
+                      {isSubmittingStore ? 'Creating...' : 'Create Store'}
                     </button>
                     <button 
                       type="button"
                       className="modal-button-outline"
-                      onClick={() => setIsCreateModalOpen(false)}
+                      onClick={closeCreateModal}
                     >
                       Cancel
                     </button>
@@ -327,51 +512,82 @@ function PlatformAdminStores() {
         )}
 
         {/* Edit Store Modal */}
-        {isEditModalOpen && selectedStore && (
-          <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+        {isEditModalOpen && selectedStore && editFormData && (
+          <div className="modal-overlay" onClick={closeEditModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2 className="modal-title">Edit Store</h2>
                 <button 
                   className="modal-close"
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={closeEditModal}
                 >
                   <XIcon />
                 </button>
               </div>
-              <div className="modal-body">
+              <form className="modal-body" onSubmit={handleSubmitEdit}>
+                {editErrorMessage && (
+                  <p className="modal-error">{editErrorMessage}</p>
+                )}
                 <div className="modal-form-grid">
                   <div className="modal-form-group">
                     <label className="modal-label">Store Name</label>
-                    <input type="text" defaultValue={selectedStore.name} className="modal-input" />
+                    <input
+                      type="text"
+                      className="modal-input"
+                      value={editFormData.name}
+                      onChange={(e) =>
+                        setEditFormData((prev) => ({ ...prev, name: e.target.value }))
+                      }
+                      required
+                    />
                   </div>
                   <div className="modal-form-group">
                     <label className="modal-label">Contact Number</label>
-                    <input type="tel" defaultValue={selectedStore.contactNumber} className="modal-input" />
+                    <input
+                      type="tel"
+                      className="modal-input"
+                      value={editFormData.contactNumber}
+                      onChange={(e) =>
+                        setEditFormData((prev) => ({ ...prev, contactNumber: e.target.value }))
+                      }
+                      required
+                    />
                   </div>
                 </div>
                 <div className="modal-form-group">
                   <label className="modal-label">Store Admin Email</label>
-                  <input type="email" defaultValue={selectedStore.email} className="modal-input" />
-                </div>
-                <div className="modal-form-group">
-                  <label className="modal-label">Password</label>
-                  <div className="modal-password-group">
-                    <input type="password" placeholder="••••••••" className="modal-input" />
-                    <button className="modal-button-small">
-                      <EditIcon />
-                      <span>Change</span>
-                    </button>
-                  </div>
+                  <input
+                    type="email"
+                    className="modal-input"
+                    value={editFormData.email}
+                    onChange={(e) =>
+                      setEditFormData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                    required
+                  />
                 </div>
                 <div className="modal-form-group">
                   <label className="modal-label">Description</label>
-                  <textarea defaultValue={selectedStore.description} rows={3} className="modal-textarea"></textarea>
+                  <textarea
+                    rows={3}
+                    className="modal-textarea"
+                    value={editFormData.description}
+                    onChange={(e) =>
+                      setEditFormData((prev) => ({ ...prev, description: e.target.value }))
+                    }
+                    required
+                  ></textarea>
                 </div>
                 <div className="modal-form-grid">
                   <div className="modal-form-group">
                     <label className="modal-label">Package</label>
-                    <select className="modal-select" defaultValue={selectedStore.package.toLowerCase()}>
+                    <select
+                      className="modal-select"
+                      value={editFormData.package}
+                      onChange={(e) =>
+                        setEditFormData((prev) => ({ ...prev, package: e.target.value }))
+                      }
+                    >
                       <option value="basic">Basic</option>
                       <option value="pro">Pro</option>
                       <option value="enterprise">Enterprise</option>
@@ -379,35 +595,58 @@ function PlatformAdminStores() {
                   </div>
                   <div className="modal-form-group">
                     <label className="modal-label">Theme Color</label>
-                    <input type="color" defaultValue={selectedStore.themeColor} className="modal-input-color" />
+                    <input
+                      type="color"
+                      className="modal-input-color"
+                      value={editFormData.themeColor}
+                      onChange={(e) =>
+                        setEditFormData((prev) => ({ ...prev, themeColor: e.target.value }))
+                      }
+                    />
                   </div>
                 </div>
                 <div className="modal-form-group">
                   <label className="modal-label">Store Icon</label>
-                  {selectedStore.icon && (selectedStore.icon.startsWith('http') || selectedStore.icon.startsWith('/') || selectedStore.icon.startsWith('data:')) && (
+                  {selectedStore.icon && (
                     <div className="modal-icon-preview">
-                      <img src={selectedStore.icon} alt="Current store icon" className="modal-icon-preview-image" />
+                      <img
+                        src={selectedStore.icon}
+                        alt="Current store icon"
+                        className="modal-icon-preview-image"
+                      />
                     </div>
                   )}
-                  <input type="file" accept="image/png,image/jpeg,image/jpg" className="modal-input" />
-                  <p className="modal-hint">Upload a PNG or JPG image for the store icon</p>
+                  <p className="modal-hint">Icon editing coming soon</p>
                 </div>
                 <div className="modal-form-group">
-                  <label className="modal-label">Store Featured Image</label>
-                  <input type="file" accept="image/*" className="modal-input" />
+                  <label className="modal-label">New Password</label>
+                  <input
+                    type="password"
+                    className="modal-input"
+                    value={editFormData.password}
+                    onChange={(e) =>
+                      setEditFormData((prev) => ({ ...prev, password: e.target.value }))
+                    }
+                    placeholder="Leave blank to keep current password"
+                    minLength={6}
+                  />
+                  <p className="modal-hint">
+                    Minimum 6 characters. Leave blank to keep the existing password.
+                  </p>
                 </div>
                 <div className="modal-actions">
-                  <button className="modal-button-primary">
-                    Save Changes
+                  <button type="submit" className="modal-button-primary" disabled={isSavingEdit}>
+                    {isSavingEdit ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button 
+                    type="button"
                     className="modal-button-outline"
-                    onClick={() => setIsEditModalOpen(false)}
+                    onClick={closeEditModal}
                   >
                     Cancel
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         )}
@@ -441,15 +680,60 @@ function PlatformAdminStores() {
           </div>
         )}
 
+        {/* Confirm Edit Dialog */}
+        {isConfirmEditOpen && pendingEditData && selectedStore && (
+          <div className="modal-overlay" onClick={() => setIsConfirmEditOpen(false)}>
+            <div className="alert-dialog" onClick={(e) => e.stopPropagation()}>
+              <div className="alert-dialog-header">
+                <h3 className="alert-dialog-title">Apply Changes to Store</h3>
+                <p className="alert-dialog-description">
+                  You&apos;re about to update <strong>{selectedStore.name}</strong>. Are you sure you
+                  want to save these changes?
+                </p>
+                <ul className="alert-dialog-list">
+                  <li>
+                    <strong>Name:</strong> {pendingEditData.name}
+                  </li>
+                  <li>
+                    <strong>Contact:</strong> {pendingEditData.contactNumber}
+                  </li>
+                  <li>
+                    <strong>Email:</strong> {pendingEditData.email}
+                  </li>
+                  <li>
+                    <strong>Package:</strong> {pendingEditData.package}
+                  </li>
+                  {pendingEditData.password && (
+                    <li>
+                      <strong>Password:</strong> Updated
+                    </li>
+                  )}
+                </ul>
+              </div>
+              <div className="alert-dialog-actions">
+                <button
+                  className="modal-button-outline"
+                  onClick={() => setIsConfirmEditOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button className="modal-button-primary" onClick={confirmEditChanges}>
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Success Modal - Show Created Store Data */}
         {isSuccessModalOpen && createdStore && (
-          <div className="modal-overlay" onClick={() => setIsSuccessModalOpen(false)}>
+          <div className="modal-overlay" onClick={closeSuccessModal}>
             <div className="modal-content success-modal" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2 className="modal-title">Store Created Successfully!</h2>
                 <button 
                   className="modal-close"
-                  onClick={() => setIsSuccessModalOpen(false)}
+                  onClick={closeSuccessModal}
                 >
                   <XIcon />
                 </button>
@@ -510,7 +794,7 @@ function PlatformAdminStores() {
                 <div className="modal-actions">
                   <button 
                     className="modal-button-primary"
-                    onClick={() => setIsSuccessModalOpen(false)}
+                    onClick={closeSuccessModal}
                   >
                     Close
                   </button>

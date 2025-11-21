@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerTopNav from './CustomerTopNav';
 import CartSidebar from './CartSidebar';
 import CustomerProductCard from './CustomerProductCard';
 import CustomerFooter from './CustomerFooter';
 import ToastContainer, { toast } from './ToastContainer';
+import { fetchItems, fetchStores, resolveMediaUrl } from '../utils/api';
 import './CustomerAllProducts.css';
 
 // Icon components
@@ -15,17 +16,6 @@ const SearchIcon = () => (
   </svg>
 );
 
-const allProducts = [
-  { id: '1', name: 'Premium Watch', description: 'Luxury timepiece with premium materials', price: 299.99, rating: 5, reviews: 128, category: 'Luxury', image: 'https://images.unsplash.com/photo-1760804876422-7efb73b58048?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwcHJvZHVjdHxlbnwxfHx8fDE3NjI0ODQ5Njd8MA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { id: '2', name: 'Luxury Leather Bag', description: 'Handcrafted leather bag', price: 399.99, rating: 5, reviews: 94, category: 'Luxury' },
-  { id: '3', name: 'Designer Sunglasses', description: 'Stylish UV protection eyewear', price: 189.99, rating: 4, reviews: 67, category: 'Tech' },
-  { id: '4', name: 'Premium Gift Set', description: 'Curated collection of luxury items', price: 149.99, rating: 5, reviews: 203, category: 'Artisan' },
-  { id: '5', name: 'Silk Scarf Collection', description: 'Premium silk scarves', price: 79.99, rating: 4, reviews: 56, category: 'Personalized' },
-  { id: '6', name: 'Watch Bundle', description: 'Set of 3 elegant watches', price: 549.99, rating: 5, reviews: 189, category: 'Luxury' },
-  { id: '7', name: 'Smart Home Hub', description: 'Control your entire smart home', price: 149.99, rating: 4, reviews: 342, category: 'Tech' },
-  { id: '8', name: 'Handmade Pottery Set', description: 'Beautiful ceramic pottery collection', price: 89.99, rating: 5, reviews: 78, category: 'Artisan' },
-];
-
 function CustomerAllProducts() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,18 +23,134 @@ function CustomerAllProducts() {
   const [sortBy, setSortBy] = useState('popular');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [stores, setStores] = useState([]);
+  const [storesError, setStoresError] = useState('');
 
-  const filteredProducts = allProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    let ignore = false;
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchItems({ status: 'active' });
+        if (!ignore) {
+          setProducts(Array.isArray(data) ? data : []);
+          setError('');
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error('Failed to load products', err);
+          setError('Unable to load products right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadProducts();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const loadStores = async () => {
+      try {
+        const data = await fetchStores();
+        if (!ignore) {
+          setStores(Array.isArray(data) ? data : []);
+          setStoresError('');
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error('Failed to load stores', err);
+          setStoresError('Unable to load store information.');
+        }
+      }
+    };
+    loadStores();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const activeStoreIds = useMemo(
+    () => stores.filter((store) => store.status === 'active').map((store) => store.id),
+    [stores]
+  );
+
+  const activeStoreIdSet = useMemo(() => new Set(activeStoreIds), [activeStoreIds]);
+
+  const activeProducts = useMemo(
+    () =>
+      products
+        .filter(
+          (product) =>
+            product.status === 'active' &&
+            product.storeId &&
+            activeStoreIdSet.has(product.storeId)
+        )
+        .map((product) => ({
+          ...product,
+          price: Number(product.price) || 0,
+          image: resolveMediaUrl(product.images?.[0]),
+          category: (product.category || 'general').toLowerCase(),
+        })),
+    [products, activeStoreIdSet]
+  );
+
+  const categoryOptions = useMemo(() => {
+    const categories = new Set();
+    activeProducts.forEach((product) => {
+      categories.add(product.category);
+    });
+    return ['all', ...Array.from(categories).sort()];
+  }, [activeProducts]);
+
+  const filteredProducts = useMemo(() => {
+    return activeProducts.filter((product) => {
+      const matchesSearch =
+        product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        categoryFilter === 'all' ||
+        product.category === categoryFilter.toLowerCase();
+      return matchesSearch && matchesCategory;
+    });
+  }, [activeProducts, categoryFilter, searchQuery]);
+
+  const sortedProducts = useMemo(() => {
+    const sortable = [...filteredProducts];
+    switch (sortBy) {
+      case 'price-low':
+        return sortable.sort((a, b) => a.price - b.price);
+      case 'price-high':
+        return sortable.sort((a, b) => b.price - a.price);
+      case 'rating':
+        return sortable.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      case 'popular':
+      default:
+        return sortable.sort(
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
+        );
+    }
+  }, [filteredProducts, sortBy]);
 
   const handleAddToCart = (productId) => {
-    const product = allProducts.find(p => p.id === productId);
+    const product = activeProducts.find(p => p.id === productId);
     if (product) {
+      if (!product.storeId || !activeStoreIdSet.has(product.storeId)) {
+        toast.error('This product is not available right now.');
+        return;
+      }
       const existingItem = cartItems.find(item => item.id === productId);
+      const resolvedImage = product.image || resolveMediaUrl(product.images?.[0]);
       if (existingItem) {
         setCartItems(cartItems.map(item =>
           item.id === productId
@@ -56,9 +162,9 @@ function CustomerAllProducts() {
         setCartItems([...cartItems, {
           id: productId,
           name: product.name,
-          price: product.price,
+          price: Number(product.price) || 0,
           quantity: 1,
-          image: product.image,
+          image: resolvedImage,
           storeName: 'Store'
         }]);
         toast.success(`${product.name} added to cart`);
@@ -97,11 +203,11 @@ function CustomerAllProducts() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="customer-all-products-filter-select"
           >
-            <option value="all">All Categories</option>
-            <option value="Luxury">Luxury</option>
-            <option value="Tech">Tech</option>
-            <option value="Artisan">Artisan</option>
-            <option value="Personalized">Personalized</option>
+            {categoryOptions.map((category) => (
+              <option key={category} value={category}>
+                {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+              </option>
+            ))}
           </select>
           <select 
             value={sortBy} 
@@ -119,18 +225,24 @@ function CustomerAllProducts() {
       {/* Products Grid */}
       <div className="customer-all-products-content">
         <div className="customer-all-products-count">
-          Showing {filteredProducts.length} products
+          {error || storesError || `Showing ${sortedProducts.length} products`}
         </div>
 
-        <div className="customer-all-products-grid">
-          {filteredProducts.map((product) => (
-            <CustomerProductCard
-              key={product.id}
-              {...product}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <p className="customer-all-products-subtitle">Loading products...</p>
+        ) : sortedProducts.length === 0 ? (
+          <p className="customer-all-products-subtitle">No products found. Try a different search or filter.</p>
+        ) : (
+          <div className="customer-all-products-grid">
+            {sortedProducts.map((product) => (
+              <CustomerProductCard
+                key={product.id}
+                {...product}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Cart Sidebar */}

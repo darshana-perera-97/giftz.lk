@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomerTopNav from './CustomerTopNav';
 import CartSidebar from './CartSidebar';
 import CustomerProductCard from './CustomerProductCard';
 import CustomerFooter from './CustomerFooter';
 import PlatformAdminCard from './Card';
 import ToastContainer, { toast } from './ToastContainer';
+import { fetchItems, fetchStoreById, resolveMediaUrl } from '../utils/api';
 import './CustomerStoreDetail.css';
 
 // Icon components
@@ -59,15 +60,6 @@ const StarIcon = ({ filled = false }) => (
   </svg>
 );
 
-const storeProducts = [
-  { id: '1', name: 'Premium Watch', description: 'Luxury timepiece with premium materials', price: 299.99, rating: 5, reviews: 128 },
-  { id: '2', name: 'Luxury Leather Bag', description: 'Handcrafted leather bag', price: 399.99, rating: 5, reviews: 94 },
-  { id: '3', name: 'Designer Sunglasses', description: 'Stylish UV protection eyewear', price: 189.99, rating: 4, reviews: 67 },
-  { id: '4', name: 'Premium Gift Set', description: 'Curated collection of luxury items', price: 149.99, rating: 5, reviews: 203 },
-  { id: '5', name: 'Silk Scarf Collection', description: 'Premium silk scarves', price: 79.99, rating: 4, reviews: 156 },
-  { id: '6', name: 'Watch Bundle', description: 'Set of 3 elegant watches', price: 549.99, rating: 5, reviews: 89 },
-];
-
 const reviews = [
   { id: '1', customer: 'John Doe', rating: 5, comment: 'Amazing quality! Exceeded my expectations.', date: '2025-11-05' },
   { id: '2', customer: 'Jane Smith', rating: 5, comment: 'Great products and excellent customer service.', date: '2025-11-04' },
@@ -76,6 +68,7 @@ const reviews = [
 
 function CustomerStoreDetail() {
   const navigate = useNavigate();
+  const { id: storeId } = useParams();
   const [activeTab, setActiveTab] = useState('products');
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -85,6 +78,119 @@ function CustomerStoreDetail() {
   const [comment, setComment] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [store, setStore] = useState(null);
+  const [storeLoading, setStoreLoading] = useState(true);
+  const [storeError, setStoreError] = useState('');
+  const [items, setItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(true);
+  const [itemsError, setItemsError] = useState('');
+
+  useEffect(() => {
+    let ignore = false;
+    const loadStore = async () => {
+      if (!storeId) {
+        setStoreError('Store not found.');
+        setStoreLoading(false);
+        return;
+      }
+      try {
+        setStoreLoading(true);
+        const data = await fetchStoreById(storeId);
+        if (!ignore) {
+          if (!data) {
+            setStoreError('Store not found.');
+            setStore(null);
+          } else {
+            setStore(data);
+            setStoreError('');
+          }
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load store', error);
+          setStoreError('Unable to load store details right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setStoreLoading(false);
+        }
+      }
+    };
+    loadStore();
+    return () => {
+      ignore = true;
+    };
+  }, [storeId]);
+
+  useEffect(() => {
+    let ignore = false;
+    const loadItems = async () => {
+      if (!storeId) {
+        setItems([]);
+        setItemsLoading(false);
+        return;
+      }
+      try {
+        setItemsLoading(true);
+        const data = await fetchItems({ storeId, status: 'active' });
+        if (!ignore) {
+          setItems(Array.isArray(data) ? data : []);
+          setItemsError('');
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load store items', error);
+          setItemsError('Unable to load store products right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setItemsLoading(false);
+        }
+      }
+    };
+    loadItems();
+    return () => {
+      ignore = true;
+    };
+  }, [storeId]);
+
+  const normalizedProducts = useMemo(() => {
+    if (store && store.status !== 'active') {
+      return [];
+    }
+    return items
+      .filter((item) => item.status === 'active')
+      .map((item) => ({
+        ...item,
+        price: Number(item.price) || 0,
+        image: resolveMediaUrl(item.images?.[0]),
+      }));
+  }, [items, store]);
+
+  const storeName = store?.name || 'Store';
+  const storeDescription =
+    store?.description ||
+    'Discover curated gifts, premium collections, and memorable surprises.';
+  const productCount = normalizedProducts.length;
+  const storeIcon = resolveMediaUrl(store?.icon);
+  const storeImage = resolveMediaUrl(store?.image);
+  const isStoreInactive = Boolean(store && store.status !== 'active');
+  const storeBackgroundImage = isStoreInactive
+    ? ''
+    : resolveMediaUrl(store?.backgroundImage || '');
+
+  const headerStyles = storeBackgroundImage
+    ? {
+        backgroundImage: `url(${storeBackgroundImage})`,
+      }
+    : undefined;
+  const headerClassName = storeBackgroundImage
+    ? 'customer-store-detail-header has-background'
+    : 'customer-store-detail-header';
+
+  const storeBadgeContent = store?.status === 'active' ? 'Verified' : store?.status || 'Store';
+
+  const cartStoreName = store?.name || 'Store';
 
   const handleWriteReview = () => {
     if (!isLoggedIn) {
@@ -116,7 +222,7 @@ function CustomerStoreDetail() {
   };
 
   const handleAddToCart = (productId) => {
-    const product = storeProducts.find(p => p.id === productId);
+    const product = normalizedProducts.find(p => p.id === productId);
     if (product) {
       const existingItem = cartItems.find(item => item.id === productId);
       if (existingItem) {
@@ -132,7 +238,8 @@ function CustomerStoreDetail() {
           name: product.name,
           price: product.price,
           quantity: 1,
-          storeName: 'Luxury Gifts Co.'
+          image: product.image,
+          storeName: cartStoreName,
         }]);
         toast.success(`${product.name} added to cart`);
       }
@@ -145,8 +252,18 @@ function CustomerStoreDetail() {
       <CustomerTopNav cartCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} />
       
       {/* Store Header */}
-      <div className="customer-store-detail-header">
-        <div className="customer-store-detail-header-emoji">🎁</div>
+      <div className={headerClassName} style={headerStyles}>
+        {!storeBackgroundImage && (
+          <div className="customer-store-detail-header-emoji">
+            {storeImage ? (
+              <img src={storeImage} alt={storeName} className="customer-store-detail-header-image" />
+            ) : storeIcon ? (
+              <img src={storeIcon} alt={`${storeName} icon`} className="customer-store-detail-header-image" />
+            ) : (
+              '🎁'
+            )}
+          </div>
+        )}
       </div>
 
       {/* Store Info */}
@@ -155,27 +272,37 @@ function CustomerStoreDetail() {
           <div className="customer-store-detail-info-content">
             <div className="customer-store-detail-info-left">
               <div className="customer-store-detail-name-row">
-                <h1 className="customer-store-detail-name">Luxury Gifts Co.</h1>
-                <span className="customer-store-detail-badge">Verified</span>
+                <h1 className="customer-store-detail-name">
+                  {storeLoading ? 'Loading store...' : storeName}
+                </h1>
+                {store && (
+                  <span className="customer-store-detail-badge">{storeBadgeContent}</span>
+                )}
               </div>
               <p className="customer-store-detail-description">
-                Premium luxury gifts and exclusive collections. We curate the finest products 
-                from around the world to bring you exceptional quality and style.
+                {storeError ? storeError : storeDescription}
               </p>
-              <div className="customer-store-detail-stats">
-                <div className="customer-store-detail-stat">
-                  <div className="customer-store-detail-stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <StarIcon key={star} filled={true} />
-                    ))}
+              {isStoreInactive && (
+                <p className="customer-store-detail-unavailable-text">
+                  This store is currently not visible to customers.
+                </p>
+              )}
+              {store && !isStoreInactive && (
+                <div className="customer-store-detail-stats">
+                  <div className="customer-store-detail-stat">
+                    <div className="customer-store-detail-stars">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <StarIcon key={star} filled={true} />
+                      ))}
+                    </div>
+                    <span>4.8 (342 reviews)</span>
                   </div>
-                  <span>4.8 (342 reviews)</span>
+                  <div className="customer-store-detail-stat">
+                    <PackageIcon />
+                    <span>{productCount} Products</span>
+                  </div>
                 </div>
-                <div className="customer-store-detail-stat">
-                  <PackageIcon />
-                  <span>45 Products</span>
-                </div>
-              </div>
+              )}
             </div>
             <button className="customer-store-detail-follow-button">
               <HeartIcon />
@@ -185,103 +312,112 @@ function CustomerStoreDetail() {
         </div>
 
         {/* Tabs */}
-        <div className="customer-store-detail-tabs">
-          <div className="customer-store-detail-tabs-list">
-            <button
-              className={`customer-store-detail-tab ${activeTab === 'products' ? 'customer-store-detail-tab-active' : ''}`}
-              onClick={() => setActiveTab('products')}
-            >
-              Products
-            </button>
-            <button
-              className={`customer-store-detail-tab ${activeTab === 'about' ? 'customer-store-detail-tab-active' : ''}`}
-              onClick={() => setActiveTab('about')}
-            >
-              About
-            </button>
-            <button
-              className={`customer-store-detail-tab ${activeTab === 'reviews' ? 'customer-store-detail-tab-active' : ''}`}
-              onClick={() => setActiveTab('reviews')}
-            >
-              Reviews
-            </button>
-          </div>
+        {!isStoreInactive ? (
+          <div className="customer-store-detail-tabs">
+            <div className="customer-store-detail-tabs-list">
+              <button
+                className={`customer-store-detail-tab ${activeTab === 'products' ? 'customer-store-detail-tab-active' : ''}`}
+                onClick={() => setActiveTab('products')}
+              >
+                Products
+              </button>
+              <button
+                className={`customer-store-detail-tab ${activeTab === 'about' ? 'customer-store-detail-tab-active' : ''}`}
+                onClick={() => setActiveTab('about')}
+              >
+                About
+              </button>
+              <button
+                className={`customer-store-detail-tab ${activeTab === 'reviews' ? 'customer-store-detail-tab-active' : ''}`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                Reviews
+              </button>
+            </div>
 
-          {activeTab === 'products' && (
-            <div className="customer-store-detail-tab-content">
-              <div className="customer-store-detail-products-grid">
-                {storeProducts.map((product) => (
-                  <CustomerProductCard
-                    key={product.id}
-                    {...product}
-                    onAddToCart={handleAddToCart}
-                  />
-                ))}
+            {activeTab === 'products' && (
+              <div className="customer-store-detail-tab-content">
+                {itemsLoading ? (
+                  <p className="customer-store-detail-placeholder">Loading products...</p>
+                ) : itemsError ? (
+                  <p className="customer-store-detail-placeholder">{itemsError}</p>
+                ) : normalizedProducts.length === 0 ? (
+                  <p className="customer-store-detail-placeholder">No products available from this store yet.</p>
+                ) : (
+                  <div className="customer-store-detail-products-grid">
+                    {normalizedProducts.map((product) => (
+                      <CustomerProductCard
+                        key={product.id}
+                        {...product}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'about' && (
-            <div className="customer-store-detail-tab-content">
-              <PlatformAdminCard className="customer-store-detail-about-card">
-                <div className="customer-store-detail-about-content">
-                  <h3 className="customer-store-detail-about-title">About Our Store</h3>
-                  <p className="customer-store-detail-about-text">
-                    Luxury Gifts Co. has been providing premium gifts and exclusive collections since 2015. 
-                    We believe that every gift should be special and memorable. Our team carefully curates 
-                    products from the finest artisans and luxury brands worldwide.
-                  </p>
-                  <h4 className="customer-store-detail-about-subtitle">Our Values</h4>
-                  <ul className="customer-store-detail-about-list">
-                    <li>
-                      <ChevronRightIcon />
-                      <span>Premium quality guaranteed on every product</span>
-                    </li>
-                    <li>
-                      <ChevronRightIcon />
-                      <span>Fast and secure worldwide shipping</span>
-                    </li>
-                    <li>
-                      <ChevronRightIcon />
-                      <span>Exceptional customer service</span>
-                    </li>
-                    <li>
-                      <ChevronRightIcon />
-                      <span>30-day return policy</span>
-                    </li>
-                  </ul>
-                </div>
-              </PlatformAdminCard>
-            </div>
-          )}
-
-          {activeTab === 'reviews' && (
-            <div className="customer-store-detail-tab-content">
-              <div className="customer-store-detail-reviews">
-                <PlatformAdminCard className="customer-store-detail-reviews-header-card">
-                  <div className="customer-store-detail-reviews-header">
-                    <div>
-                      <h3 className="customer-store-detail-reviews-title">Customer Reviews</h3>
-                      <div className="customer-store-detail-reviews-rating">
-                        <div className="customer-store-detail-stars-large">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <StarIcon key={star} filled={true} />
-                          ))}
-                        </div>
-                        <span>4.8 out of 5 based on 342 reviews</span>
-                      </div>
-                    </div>
-                    <button 
-                      className="customer-store-detail-write-review-button"
-                      onClick={handleWriteReview}
-                    >
-                      <PlusIcon />
-                      <span>Write a Review</span>
-                    </button>
+            {activeTab === 'about' && (
+              <div className="customer-store-detail-tab-content">
+                <PlatformAdminCard className="customer-store-detail-about-card">
+                  <div className="customer-store-detail-about-content">
+                    <h3 className="customer-store-detail-about-title">About Our Store</h3>
+                    <p className="customer-store-detail-about-text">
+                      Luxury Gifts Co. has been providing premium gifts and exclusive collections since 2015. 
+                      We believe that every gift should be special and memorable. Our team carefully curates 
+                      products from the finest artisans and luxury brands worldwide.
+                    </p>
+                    <h4 className="customer-store-detail-about-subtitle">Our Values</h4>
+                    <ul className="customer-store-detail-about-list">
+                      <li>
+                        <ChevronRightIcon />
+                        <span>Premium quality guaranteed on every product</span>
+                      </li>
+                      <li>
+                        <ChevronRightIcon />
+                        <span>Fast and secure worldwide shipping</span>
+                      </li>
+                      <li>
+                        <ChevronRightIcon />
+                        <span>Exceptional customer service</span>
+                      </li>
+                      <li>
+                        <ChevronRightIcon />
+                        <span>30-day return policy</span>
+                      </li>
+                    </ul>
                   </div>
                 </PlatformAdminCard>
+              </div>
+            )}
 
-                {reviews.map((review) => (
+            {activeTab === 'reviews' && (
+              <div className="customer-store-detail-tab-content">
+                <div className="customer-store-detail-reviews">
+                  <PlatformAdminCard className="customer-store-detail-reviews-header-card">
+                    <div className="customer-store-detail-reviews-header">
+                      <div>
+                        <h3 className="customer-store-detail-reviews-title">Customer Reviews</h3>
+                        <div className="customer-store-detail-reviews-rating">
+                          <div className="customer-store-detail-stars-large">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <StarIcon key={star} filled={true} />
+                            ))}
+                          </div>
+                          <span>4.8 out of 5 based on 342 reviews</span>
+                        </div>
+                      </div>
+                      <button 
+                        className="customer-store-detail-write-review-button"
+                        onClick={handleWriteReview}
+                      >
+                        <PlusIcon />
+                        <span>Write a Review</span>
+                      </button>
+                    </div>
+                  </PlatformAdminCard>
+
+                  {reviews.map((review) => (
                   <PlatformAdminCard key={review.id} className="customer-store-detail-review-card">
                     <div className="customer-store-detail-review-header">
                       <div>
@@ -296,11 +432,18 @@ function CustomerStoreDetail() {
                     </div>
                     <p className="customer-store-detail-review-comment">{review.comment}</p>
                   </PlatformAdminCard>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="customer-store-detail-unavailable-card">
+            <PlatformAdminCard>
+              <p>This store is currently hidden from customers.</p>
+            </PlatformAdminCard>
+          </div>
+        )}
       </div>
 
       {/* Register Modal */}

@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, Outlet } from 'react-router-dom';
+import { useMemo } from 'react';
 import PlatformAdminLogin from './components/PlatformAdminLogin';
 import PlatformAdminDashboard from './components/Dashboard';
 import PlatformAdminStores from './components/PlatformAdminStores';
@@ -18,16 +19,30 @@ import CustomerAllProducts from './components/CustomerAllProducts';
 import CustomerSingleProduct from './components/CustomerSingleProduct';
 import './App.css';
 
+function ProtectedRoute({ isAllowed, redirectTo = '/platformAdmin/login' }) {
+  if (!isAllowed) {
+    return <Navigate to={redirectTo} replace />;
+  }
+  return <Outlet />;
+}
+
 function App() {
   const navigate = useNavigate();
+  const isPlatformAdminLoggedIn = Boolean(localStorage.getItem('platformAdminLoggedIn'));
+  const storeAdminStoreId = localStorage.getItem('storeAdminStoreId');
+  const isStoreAdminLoggedIn = Boolean(storeAdminStoreId);
 
   const handlePlatformAdminLogin = () => {
-    console.log('Platform admin logged in');
+    localStorage.setItem('platformAdminLoggedIn', 'true');
     navigate('/platformAdmin/dashboard');
   };
 
-  const handleStoreAdminLogin = () => {
-    console.log('Store admin logged in');
+  const handleStoreAdminLogin = (store) => {
+    if (store?.id) {
+      localStorage.setItem('storeAdminStoreId', store.id);
+    } else {
+      localStorage.removeItem('storeAdminStoreId');
+    }
     navigate('/storeAdmin/dashboard');
   };
 
@@ -36,20 +51,24 @@ function App() {
       <Routes>
         {/* Platform Admin Routes */}
         <Route path="/platformAdmin/login" element={<PlatformAdminLogin onLogin={handlePlatformAdminLogin} />} />
-        <Route path="/platformAdmin/dashboard" element={<PlatformAdminDashboard />} />
-        <Route path="/platformAdmin/stores" element={<PlatformAdminStores />} />
-        <Route path="/platformAdmin/items" element={<PlatformAdminItems />} />
-        <Route path="/platformAdmin/orders" element={<PlatformAdminOrders />} />
-        <Route path="/platformAdmin/comments" element={<PlatformAdminComments />} />
+        <Route element={<ProtectedRoute isAllowed={isPlatformAdminLoggedIn} />}>
+          <Route path="/platformAdmin/dashboard" element={<PlatformAdminDashboard />} />
+          <Route path="/platformAdmin/stores" element={<PlatformAdminStores />} />
+          <Route path="/platformAdmin/items" element={<PlatformAdminItems />} />
+          <Route path="/platformAdmin/orders" element={<PlatformAdminOrders />} />
+          <Route path="/platformAdmin/comments" element={<PlatformAdminComments />} />
+        </Route>
         <Route path="/platformAdmin" element={<Navigate to="/platformAdmin/login" replace />} />
         
         {/* Store Admin Routes */}
         <Route path="/storeAdmin/login" element={<StoreAdminLogin onLogin={handleStoreAdminLogin} />} />
-        <Route path="/storeAdmin/dashboard" element={<StoreAdminDashboard />} />
-        <Route path="/storeAdmin/products" element={<StoreAdminProducts />} />
-        <Route path="/storeAdmin/orders" element={<StoreAdminOrders />} />
-        <Route path="/storeAdmin/comments" element={<StoreAdminComments />} />
-        <Route path="/storeAdmin/store-details" element={<StoreAdminStoreDetails />} />
+        <Route element={<ProtectedRoute isAllowed={isStoreAdminLoggedIn} redirectTo="/storeAdmin/login" />}>
+          <Route path="/storeAdmin/dashboard" element={<StoreAdminDashboard />} />
+          <Route path="/storeAdmin/products" element={<StoreAdminProducts />} />
+          <Route path="/storeAdmin/orders" element={<StoreAdminOrders />} />
+          <Route path="/storeAdmin/comments" element={<StoreAdminComments />} />
+          <Route path="/storeAdmin/store-details" element={<StoreAdminStoreDetails />} />
+        </Route>
         <Route path="/storeAdmin" element={<Navigate to="/storeAdmin/login" replace />} />
         
         {/* Customer Routes */}

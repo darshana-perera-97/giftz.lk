@@ -6,12 +6,17 @@
   overflow-x: hidden;
   max-width: 100%;
   width: 100%;
+  padding-top: 4rem;
 }
 
 .platform-admin-content {
   display: flex;
   flex: 1;
   min-height: calc(100vh - 4rem);
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 16rem;
+  background: #f8fafc;
 }
 
 .platform-admin-main {
@@ -19,5 +24,19 @@
   padding: 2rem;
   background: #fff;
   overflow-y: auto;
+  min-height: calc(100vh - 4rem);
+  box-sizing: border-box;
+}
+
+@media (max-width: 1023px) {
+  .platform-admin-content {
+    padding-left: 0;
+    flex-direction: column;
+  }
+
+  .platform-admin-main {
+    padding: 1.5rem 1rem;
+    min-height: auto;
+  }
 }
 

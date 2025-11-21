@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import StoreAdminLayout from './StoreAdminLayout';
 import PlatformAdminCard from './Card';
+import ToastContainer, { toast } from './ToastContainer';
+import { fetchStoreById, resolveMediaUrl, updateStore } from '../utils/api';
 import './StoreAdminStoreDetails.css';
 
 // Icon components
@@ -40,18 +42,211 @@ const CommentsIcon = () => (
   </svg>
 );
 
+const MAX_BACKGROUND_SIZE_MB = 5;
+const MAX_ICON_SIZE_MB = 2;
+
 function StoreAdminStoreDetails() {
-  const [storeData, setStoreData] = useState({
-    name: 'Luxury Gifts Co.',
-    email: 'admin@luxurygifts.com',
-    contactNumber: '+1 (555) 123-4567',
-    package: 'Pro',
-    description: 'Premium luxury gifts and exclusive collections for every special occasion.',
-    keywords: 'luxury, gifts, premium, exclusive',
+  const storeId =
+    typeof window !== 'undefined' ? localStorage.getItem('storeAdminStoreId') : null;
+  const [storeData, setStoreData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    description: '',
+    keywords: '',
     themeColor: '#6366f1',
   });
+  const [backgroundImageState, setBackgroundImageState] = useState({
+    preview: '',
+    value: '',
+  });
+  const [storeIconState, setStoreIconState] = useState({
+    preview: '',
+    value: '',
+  });
 
-  const [isEditing, setIsEditing] = useState(false);
+  useEffect(() => {
+    let ignore = false;
+    const loadStore = async () => {
+      if (!storeId) {
+        setLoadError('Store ID not found. Please log in again.');
+        setIsLoading(false);
+        return;
+      }
+      try {
+        setIsLoading(true);
+        const data = await fetchStoreById(storeId);
+        if (!ignore) {
+          if (!data) {
+            setLoadError('Store not found.');
+            setStoreData(null);
+          } else {
+            setStoreData(data);
+            setLoadError('');
+          }
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load store details', error);
+          setLoadError('Unable to load store details right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadStore();
+    return () => {
+      ignore = true;
+    };
+  }, [storeId]);
+
+  useEffect(() => {
+    if (!storeData) {
+      return;
+    }
+    setFormData({
+      description: storeData.description || '',
+      keywords: storeData.keywords || '',
+      themeColor: storeData.themeColor || '#6366f1',
+    });
+    setBackgroundImageState({
+      preview: '',
+      value: '',
+    });
+    setStoreIconState({
+      preview: '',
+      value: '',
+    });
+  }, [storeData]);
+
+  const handleBackgroundImageChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const maxBytes = MAX_BACKGROUND_SIZE_MB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      toast.error(`Background image must be under ${MAX_BACKGROUND_SIZE_MB}MB.`);
+      return;
+    }
+
+    const toBase64 = (blob) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+    try {
+      const base64 = await toBase64(file);
+      setBackgroundImageState({
+        preview: base64,
+        value: base64,
+      });
+    } catch (error) {
+      console.error('Failed to read background image', error);
+      toast.error('Failed to read the selected image. Please try again.');
+    }
+  };
+
+  const handleIconChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const maxBytes = MAX_ICON_SIZE_MB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      toast.error(`Icon image must be under ${MAX_ICON_SIZE_MB}MB.`);
+      return;
+    }
+
+    const toBase64 = (blob) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+    try {
+      const base64 = await toBase64(file);
+      setStoreIconState({
+        preview: base64,
+        value: base64,
+      });
+    } catch (error) {
+      console.error('Failed to read icon image', error);
+      toast.error('Failed to read the selected icon. Please try again.');
+    }
+  };
+
+  const handleSave = async () => {
+    if (!storeId) {
+      toast.error('Store ID not found. Please log in again.');
+      return;
+    }
+    try {
+      setIsSaving(true);
+      const payload = {
+        description: formData.description,
+        keywords: formData.keywords,
+        themeColor: formData.themeColor,
+      };
+
+      if (backgroundImageState.value) {
+        payload.backgroundImage = backgroundImageState.value;
+      }
+    if (storeIconState.value) {
+      payload.icon = storeIconState.value;
+    }
+
+      const updated = await updateStore(storeId, payload);
+      setStoreData(updated);
+      toast.success('Store details updated successfully.');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update store details', error);
+      toast.error(error.message || 'Failed to update store details.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const backgroundPreview = useMemo(() => {
+    if (backgroundImageState.preview) {
+      return backgroundImageState.preview;
+    }
+    return resolveMediaUrl(storeData?.backgroundImage || storeData?.image || '');
+  }, [backgroundImageState.preview, storeData]);
+
+  const iconPreview = useMemo(() => {
+    if (storeIconState.preview) {
+      return storeIconState.preview;
+    }
+    return resolveMediaUrl(storeData?.icon || '');
+  }, [storeIconState.preview, storeData]);
+
+  if (isLoading) {
+    return (
+      <StoreAdminLayout>
+        <div className="store-details-loading">Loading store details...</div>
+      </StoreAdminLayout>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <StoreAdminLayout>
+        <div className="store-details-error">{loadError}</div>
+        <ToastContainer />
+      </StoreAdminLayout>
+    );
+  }
 
   return (
     <StoreAdminLayout>
@@ -72,14 +267,24 @@ function StoreAdminStoreDetails() {
           ) : (
             <div className="store-details-actions">
               <button
-                onClick={() => setIsEditing(false)}
+                onClick={handleSave}
                 className="store-details-save-button"
+                disabled={isSaving}
               >
-                Save Changes
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
               <button 
                 className="store-details-cancel-button"
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  setBackgroundImageState({ preview: '', value: '' });
+                  setStoreIconState({ preview: '', value: '' });
+                  setFormData({
+                    description: storeData.description || '',
+                    keywords: storeData.keywords || '',
+                    themeColor: storeData.themeColor || '#6366f1',
+                  });
+                }}
               >
                 Cancel
               </button>
@@ -98,22 +303,22 @@ function StoreAdminStoreDetails() {
             <div className="store-details-info-list">
               <div className="store-details-info-item">
                 <label className="store-details-info-label">Store Name</label>
-                <p className="store-details-info-value">{storeData.name}</p>
+                <p className="store-details-info-value">{storeData?.name || '—'}</p>
               </div>
 
               <div className="store-details-info-item">
                 <label className="store-details-info-label">Email</label>
-                <p className="store-details-info-value">{storeData.email}</p>
+                <p className="store-details-info-value">{storeData?.email || '—'}</p>
               </div>
 
               <div className="store-details-info-item">
                 <label className="store-details-info-label">Contact Number</label>
-                <p className="store-details-info-value">{storeData.contactNumber}</p>
+                <p className="store-details-info-value">{storeData?.contactNumber || '—'}</p>
               </div>
 
               <div className="store-details-info-item">
                 <label className="store-details-info-label">Package</label>
-                <span className="store-details-package-badge">{storeData.package}</span>
+                <span className="store-details-package-badge">{storeData?.package || '—'}</span>
               </div>
             </div>
           </PlatformAdminCard>
@@ -130,14 +335,14 @@ function StoreAdminStoreDetails() {
                 <label className="store-details-form-label">About Store</label>
                 {isEditing ? (
                   <textarea
-                    value={storeData.description}
-                    onChange={(e) => setStoreData({ ...storeData, description: e.target.value })}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
                     placeholder="Describe your store..."
                     className="store-details-textarea"
                   />
                 ) : (
-                  <p className="store-details-readonly-field">{storeData.description}</p>
+                  <p className="store-details-readonly-field">{storeData?.description || 'No description added yet.'}</p>
                 )}
               </div>
 
@@ -146,13 +351,15 @@ function StoreAdminStoreDetails() {
                 {isEditing ? (
                   <input
                     type="text"
-                    value={storeData.keywords}
-                    onChange={(e) => setStoreData({ ...storeData, keywords: e.target.value })}
+                    value={formData.keywords}
+                    onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
                     placeholder="luxury, gifts, premium..."
                     className="store-details-input"
                   />
                 ) : (
-                  <p className="store-details-readonly-field">{storeData.keywords}</p>
+                  <p className="store-details-readonly-field">
+                    {storeData?.keywords || 'No keywords added yet.'}
+                  </p>
                 )}
                 <p className="store-details-hint">Comma-separated keywords for better discoverability</p>
               </div>
@@ -164,14 +371,14 @@ function StoreAdminStoreDetails() {
                     <>
                       <input
                         type="color"
-                        value={storeData.themeColor}
-                        onChange={(e) => setStoreData({ ...storeData, themeColor: e.target.value })}
+                        value={formData.themeColor}
+                        onChange={(e) => setFormData({ ...formData, themeColor: e.target.value })}
                         className="store-details-color-input"
                       />
                       <input
                         type="text"
-                        value={storeData.themeColor}
-                        onChange={(e) => setStoreData({ ...storeData, themeColor: e.target.value })}
+                        value={formData.themeColor}
+                        onChange={(e) => setFormData({ ...formData, themeColor: e.target.value })}
                         placeholder="#6366f1"
                         className="store-details-color-text"
                       />
@@ -180,13 +387,80 @@ function StoreAdminStoreDetails() {
                     <>
                       <div
                         className="store-details-color-preview"
-                        style={{ backgroundColor: storeData.themeColor }}
+                        style={{ backgroundColor: storeData?.themeColor || '#6366f1' }}
                       />
-                      <p className="store-details-readonly-field">{storeData.themeColor}</p>
+                      <p className="store-details-readonly-field">{storeData?.themeColor || '#6366f1'}</p>
                     </>
                   )}
                 </div>
                 <p className="store-details-hint">This color will be used throughout your store</p>
+              </div>
+
+              <div className="store-details-form-group">
+                <label className="store-details-form-label">Store Background Image</label>
+                <div className="store-details-background-upload">
+                  <div
+                    className={`store-details-background-preview ${
+                      backgroundPreview ? 'has-background' : ''
+                    }`}
+                    style={
+                      backgroundPreview
+                        ? { backgroundImage: `url(${backgroundPreview})` }
+                        : undefined
+                    }
+                  >
+                    {backgroundPreview ? (
+                      <span>Current background preview</span>
+                    ) : (
+                      <span>No background selected</span>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <div className="store-details-background-actions">
+                      <label className="store-details-upload-button">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleBackgroundImageChange}
+                        />
+                        Upload Background
+                      </label>
+                      <p className="store-details-hint">
+                        Recommended 1600x600px, max {MAX_BACKGROUND_SIZE_MB}MB
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="store-details-form-group">
+                <label className="store-details-form-label">Store Icon</label>
+                <div className="store-details-icon-upload">
+                  <div className="store-details-icon-preview">
+                    {iconPreview ? (
+                      <img src={iconPreview} alt="Store icon preview" />
+                    ) : (
+                      <span>Logo</span>
+                    )}
+                  </div>
+                  {isEditing ? (
+                    <div className="store-details-icon-actions">
+                      <label className="store-details-upload-button">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleIconChange}
+                        />
+                        Upload Icon
+                      </label>
+                      <p className="store-details-hint">
+                        Recommended square image, max {MAX_ICON_SIZE_MB}MB
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="store-details-hint">This icon appears on customer pages.</p>
+                  )}
+                </div>
               </div>
             </div>
           </PlatformAdminCard>
@@ -243,6 +517,7 @@ function StoreAdminStoreDetails() {
           </PlatformAdminCard>
         </div>
       </div>
+      <ToastContainer />
     </StoreAdminLayout>
   );
 }

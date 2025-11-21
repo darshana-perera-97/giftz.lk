@@ -90,6 +90,7 @@ function StoreAdminTopNav() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('storeAdminStoreId');
     navigate('/storeAdmin/login');
     setIsMenuOpen(false);
   };

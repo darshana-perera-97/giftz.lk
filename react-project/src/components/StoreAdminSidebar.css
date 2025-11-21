@@ -1,10 +1,9 @@
 .store-admin-sidebar {
   width: 16rem;
-  height: calc(100vh - 4rem);
   background: white;
   border-right: 1px solid #e2e8f0;
-  position: sticky;
-  top: 4rem;
+  flex-shrink: 0;
+  height: 100%;
 }
 
 .store-admin-sidebar-nav {
@@ -59,6 +58,17 @@
 
 .store-admin-sidebar-item span {
   flex: 1;
+}
+
+@media (min-width: 1024px) {
+  .store-admin-sidebar {
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    overflow-y: auto;
+  }
 }
 
 /* Responsive Styles */

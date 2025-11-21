@@ -119,6 +119,22 @@
   gap: 1.5rem;
 }
 
+.stores-status-message {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.stores-status-message.stores-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
 @media (min-width: 768px) {
   .stores-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -347,6 +363,17 @@
   font-family: inherit;
 }
 
+.modal-error {
+  font-size: 0.875rem;
+  color: #b91c1c;
+  margin: 0.25rem 0 0;
+}
+
+.modal-button-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .modal-input-color {
   width: 100%;
   height: 2.5rem;
@@ -528,6 +555,17 @@
 .alert-dialog-actions .modal-button-primary {
   flex: 1;
   min-width: auto;
+}
+
+.alert-dialog-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #0f172a;
+  font-size: 0.875rem;
 }
 
 @media (min-width: 640px) {

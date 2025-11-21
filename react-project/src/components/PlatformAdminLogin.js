@@ -1,14 +1,42 @@
 import { useState } from 'react';
 import './PlatformAdminLogin.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+
 function PlatformAdminLogin({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onLogin) {
-      onLogin();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Invalid email or password');
+        return;
+      }
+
+      if (onLogin) {
+        onLogin(data.user);
+      }
+    } catch (err) {
+      setError('Unable to reach the server. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,8 +90,14 @@ function PlatformAdminLogin({ onLogin }) {
             />
           </div>
 
-          <button type="submit" className="platform-login-button">
-            Sign In
+          {error && (
+            <div className="platform-login-error" role="alert">
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="platform-login-button" disabled={isLoading}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
 
           <div className="platform-login-footer">

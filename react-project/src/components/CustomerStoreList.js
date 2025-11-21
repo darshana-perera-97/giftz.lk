@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerTopNav from './CustomerTopNav';
 import CartSidebar from './CartSidebar';
 import CustomerStoreCard from './CustomerStoreCard';
 import CustomerFooter from './CustomerFooter';
 import ToastContainer, { toast } from './ToastContainer';
+import { fetchItems, fetchStores, resolveMediaUrl } from '../utils/api';
 import './CustomerStoreList.css';
 
 // Icon components
@@ -30,25 +31,89 @@ const StoreIcon = () => (
   </svg>
 );
 
-const allStores = [
-  { id: '1', name: 'Luxury Gifts Co.', description: 'Premium luxury gifts and exclusive collections', productCount: 45, status: 'active' },
-  { id: '2', name: 'Artisan Crafts', description: 'Handmade artisan products from local creators', productCount: 32, status: 'active' },
-  { id: '3', name: 'Tech Gadgets Store', description: 'Latest tech gifts and innovative gadgets', productCount: 67, status: 'active' },
-  { id: '4', name: 'Personalized Treasures', description: 'Custom personalized gifts for every occasion', productCount: 28, status: 'active' },
-  { id: '5', name: 'Eco-Friendly Gifts', description: 'Sustainable and environmentally conscious products', productCount: 41, status: 'active' },
-  { id: '6', name: 'Kids Wonderland', description: 'Amazing gifts and toys for children', productCount: 89, status: 'active' },
-  { id: '7', name: 'Gourmet Delights', description: 'Premium food and beverage gifts', productCount: 52, status: 'active' },
-  { id: '8', name: 'Home & Living', description: 'Elegant home decor and lifestyle products', productCount: 73, status: 'active' },
-];
-
 function CustomerStoreList() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [items, setItems] = useState([]);
+  const [isLoadingStores, setIsLoadingStores] = useState(false);
+  const [storesError, setStoresError] = useState('');
 
-  const filteredStores = allStores.filter(store =>
+  useEffect(() => {
+    let ignore = false;
+    const loadStores = async () => {
+      try {
+        setIsLoadingStores(true);
+        const data = await fetchStores();
+        if (!ignore) {
+          setStores(Array.isArray(data) ? data : []);
+          setStoresError('');
+        }
+      } catch (error) {
+        if (!ignore) {
+          console.error('Failed to load stores', error);
+          setStoresError('Unable to load stores right now.');
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoadingStores(false);
+        }
+      }
+    };
+    loadStores();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const loadItems = async () => {
+      try {
+        const data = await fetchItems({ status: 'active' });
+        if (!ignore) {
+          setItems(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.error('Failed to load items for store counts', error);
+      }
+    };
+    loadItems();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const activeItems = useMemo(
+    () => items.filter((item) => item.status !== 'hidden'),
+    [items]
+  );
+
+  const storeItemCounts = useMemo(() => {
+    return activeItems.reduce((acc, item) => {
+      if (!item.storeId) {
+        return acc;
+      }
+      acc[item.storeId] = (acc[item.storeId] || 0) + 1;
+      return acc;
+    }, {});
+  }, [activeItems]);
+
+  const normalizedStores = useMemo(() => {
+    return stores
+      .filter((store) => store.status === 'active')
+      .map((store) => ({
+        ...store,
+        productCount: storeItemCounts[store.id] ?? store.productCount ?? 0,
+        image: resolveMediaUrl(store.image),
+        icon: resolveMediaUrl(store.icon),
+      }));
+  }, [storeItemCounts, stores]);
+
+  const filteredStores = normalizedStores.filter(store =>
     store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     store.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -64,7 +129,7 @@ function CustomerStoreList() {
         <div className="customer-store-list-header-content">
           <h1 className="customer-store-list-title">Explore All Stores</h1>
           <p className="customer-store-list-subtitle">
-            Browse through our collection of {allStores.length} premium gift stores
+            {storesError || `Browse through our collection of ${normalizedStores.length} premium gift stores`}
           </p>
         </div>
       </div>
@@ -106,7 +171,9 @@ function CustomerStoreList() {
 
       {/* Store Grid */}
       <div className="customer-store-list-content">
-        {filteredStores.length === 0 ? (
+        {isLoadingStores ? (
+          <p className="customer-store-list-subtitle">Loading stores...</p>
+        ) : filteredStores.length === 0 ? (
           <div className="customer-store-list-empty">
             <StoreIcon />
             <h3 className="customer-store-list-empty-title">No stores found</h3>
